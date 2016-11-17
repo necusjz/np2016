@@ -1,5 +1,6 @@
 {
   _id: "bbca5d6a-2156-41c4-89da-0329e8c99a4f", 
+  originPicture： "bbca5d6a-2156-41c4-89da-0329e8c99a4f", //原图片在Mangodb存储中的OID
   date: 2016-09-21,
   profile: {
     sex: "Man",
