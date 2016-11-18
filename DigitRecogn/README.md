@@ -21,6 +21,7 @@ pip3 install --upgrade pip && pip3 install numpy
 2,下载图像和标签数据
 
 wget http://labfile.oss.aliyuncs.com/courses/593/data.csv
+
 wget http://labfile.oss.aliyuncs.com/courses/593/dataLabels.csv
 
 3,训练模型
