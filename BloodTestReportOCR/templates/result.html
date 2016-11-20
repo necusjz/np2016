@@ -25,9 +25,7 @@
                 <div>
                     This is a list of the files you just uploaded, click on them to load/download them
                     <ul>
-                        {% for file in filenames %}
-                        <li><a href="{{url_for('upload', filename=file)}}">{{file}}</a></li>
-                        {% endfor %}
+                        <li><a href="{{url_for('find_file', fid=fileid)}}">{{filename}}</a></li>
                     </ul>
                 </div>
                 <div class="panel-body">

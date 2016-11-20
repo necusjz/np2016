@@ -3,11 +3,12 @@
 
 
 import os
-from flask import Flask, request, render_template
+from flask import Flask, request, Response, render_template
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 import bson.binary
 from cStringIO import StringIO
+from PIL import Image
 
 
 
@@ -16,17 +17,18 @@ app = Flask(__name__)
 app.config.from_object('config')
 # 连接数据库，并获取数据库对象
 db = MongoClient(app.config['DB_HOST'], app.config['DB_PORT']).test
-filenames = []
-
-def allowed_file(filename):
-	return '.' in filename and \
-			filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
 def save_file(f):
 	content = StringIO(f.read())
-	c = dict(content=bson.binary.Binary(content.getvalue()))
+	try:
+		mime = Image.open(content).format.lower()
+		if mime not in app.config['ALLOWED_EXTENSIONS']:
+			raise IOError()
+	except IOError:
+		flask.abort(400)
+	c = dict(content=bson.binary.Binary(content.getvalue()),filename=secure_filename(f.filename), mime=mime)
 	db.files.save(c)
-	return c['_id']
+	return c['_id'], c['filename']
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -43,13 +45,19 @@ def upload():
 		if file.filename == '':
 			flash('No selected file')
 			return render_template("error.html", errormessage="No selected file")
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			#print(filename)
+		if file:
 			# 保存到mongodb
-			fid = save_file(file)
+			fid, filename= save_file(file)
 			print(fid)
-			filenames.append(filename)
-			return render_template("result.html", filenames=filenames)
+			return render_template("result.html", filename=filename, fileid=fid)
 	return render_template("error.html", errormessage="No POST methods")
 
+@app.route('/file/<fid>')
+def find_file(fid):
+	try:
+		file = db.files.find_one(bson.objectid.ObjectId(fid))
+		if file is None:
+			raise bson.errors.InvalidId()
+		return Response(file['content'], mimetype='image/' + file['mime'])
+	except bson.errors.InvalidId:
+		flask.abort(404)
