@@ -3,14 +3,14 @@
 ## 实现图片文件上传到服务器的功能
 
 ### Requirements
+ - python 2.7
+ - Flask
+&emsp;&emsp;安装Flask,[Flask官网](http://flask.pocoo.org/docs/0.11/quickstart/)
 ```
-python 2.7
-Flask
-
 pip install Flask
 ```
-[Flask官网](http://flask.pocoo.org/docs/0.11/quickstart/)
-### Deployment
+
+### Deploy
 ```
 export FLASK_APP=view.py
 //optional
@@ -20,3 +20,4 @@ flask run
 // or python -m flask run
 
 ```
+&emsp;&emsp;访问localhost:5000
