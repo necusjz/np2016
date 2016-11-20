@@ -40,4 +40,7 @@ flask run
  - [Ubuntu16.04使用阿里云镜像安装Mongodb](http://www.linuxdiyf.com/linux/26151.html)
 
 #### python客户端开发
- - [python driver](https://docs.mongodb.com/getting-started/python/client/)
+&emsp;&emsp;安装[python driver](https://docs.mongodb.com/getting-started/python/client/)
+```
+pip install pymongo
+```
