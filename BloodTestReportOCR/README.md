@@ -22,3 +22,22 @@ flask run
 
 ```
 &emsp;&emsp;访问localhost:5000
+
+## 实现图片上传到服务器并写入mongodb
+### Requirements
+ - python 2.7
+ - Flask
+ - mongoDB
+ - pymongo
+
+&emsp;&emsp;安装[mongoDB](https://docs.mongodb.com/manual/installation/)
+
+#### 参考
+ - [官网](https://docs.mongodb.com/manual/installation/)
+ - [install-mongodb-on-ubuntu-16.04](https://www.howtoforge.com/tutorial/install-mongodb-on-ubuntu-16.04/)
+
+#### 国外镜像安装过慢的方法
+ - [Ubuntu16.04使用阿里云镜像安装Mongodb](http://www.linuxdiyf.com/linux/26151.html)
+
+#### python客户端开发
+ - [python driver](https://docs.mongodb.com/getting-started/python/client/)
