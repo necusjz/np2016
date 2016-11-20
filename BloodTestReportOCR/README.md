@@ -5,7 +5,8 @@
 ### Requirements
  - python 2.7
  - Flask
-&emsp;&emsp;安装Flask,[Flask官网](http://flask.pocoo.org/docs/0.11/quickstart/)
+
+&emsp;&emsp;安装[Flask](http://flask.pocoo.org/docs/0.11/quickstart/)
 ```
 pip install Flask
 ```
