@@ -8,7 +8,7 @@
  - 激活函数 sigmoid
  - 参数保存在 nn.json
 
-#### 环境配置
+#### 环境配置(如果在本地运行)
  - 系统: ubuntu 14.04 64位
 
 ```
@@ -31,26 +31,26 @@ pip install -U scikit-learn -i https://pypi.mirrors.ustc.edu.cn/simple
 
 1. 下载图像和标签数据
 
-```
-wget http://labfile.oss.aliyuncs.com/courses/593/data.csv
-wget http://labfile.oss.aliyuncs.com/courses/593/dataLabels.csv
-```
+ ```
+ wget http://labfile.oss.aliyuncs.com/courses/593/data.csv
+ wget http://labfile.oss.aliyuncs.com/courses/593/dataLabels.csv
+ ```
 
 2. 训练模型
 
-`python neural_network_design.py`
+ `python neural_network_design.py`
 
 3. 创建服务器
 
-`python -m SimpleHTTPServer 3000`
+ `python -m SimpleHTTPServer 3000`
 
 4. 加载服务器
 
-`python server.py`
+ `python server.py`
 
 5. 访问
 
-`localhost:3000`
+ `localhost:3000`
 
 
 * 实现指导见https://www.shiyanlou.com/courses/593
