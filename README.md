@@ -3,6 +3,7 @@
 * 将血常规检验报告的图片识别出年龄、性别及血常规检验的各项数据
     * 图片上传页面，提交的结果是图片存储到了mongodb数据库得到一个OID
     * 图片识别得到一个json数据存储到了mongodb数据库得到一个OID，json数据如https://coding.net/u/mengning/p/np2016/git/blob/master/BloodTestReportOCR/bloodtestdata.json
+    
            * 自动截取目标区域
            * 预处理，比如增加对比度、锐化
            * 识别
