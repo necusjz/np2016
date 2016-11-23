@@ -4,6 +4,7 @@ import json
 from ocr import OCRNeuralNetwork
 import numpy as np
 import random
+from collections import namedtuple
 
 #服务器端配置
 HOST_NAME = 'localhost'
@@ -37,7 +38,9 @@ class JSONHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         # 如果是训练请求，训练然后保存训练完的神经网络
         if payload.get('train'):
-            nn.train(payload['trainArray'])
+            # 转化数据格式
+            TrainData = namedtuple('TrainData', ['y0', 'label'])
+            nn.train([TrainData(payload['trainArray'][0]['y0'],payload['trainArray'][0]['label'])])
             nn.save()
         # 如果是预测请求，返回预测值
         elif payload.get('predict'):
