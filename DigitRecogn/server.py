@@ -7,7 +7,7 @@ import random
 from collections import namedtuple
 
 #服务器端配置
-HOST_NAME = 'localhost'
+HOST_NAME = ''
 PORT_NUMBER = 9000
 #这个值是通过运行神经网络设计脚本得到的最优值
 HIDDEN_NODE_COUNT = 15
