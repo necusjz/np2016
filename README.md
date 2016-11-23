@@ -1,10 +1,30 @@
-# 对血常规检验报告的OCR识别、深度学习与分析
+# 神经网络实现手写字符识别系统
 
-* 将血常规检验报告的图片识别出年龄、性别及血常规检验的各项数据
-* 学习血常规检验的各项数据及对应的年龄性别
-* 根据血常规检验的各项数据预测年龄和性别
+BP神经网络
+步长0.1
+激励函数 sigmoid
+保存文件 nn.json
 
-## Links
+1,下载图像和标签数据
 
-* 2016年秋-网络程序设计http://teamtrac.ustcsz.edu.cn/wiki/NP2016
-* 一些有趣的深度学习项目https://coding.net/u/mengning/p/np2016/topic/209943
+wget http://labfile.oss.aliyuncs.com/courses/593/data.csv
+wget http://labfile.oss.aliyuncs.com/courses/593/dataLabels.csv
+
+2,训练模型
+
+python neural_network_design.py
+
+3,创建服务器
+
+python -m SimpleHTTPServer 3000
+
+4,加载服务器
+
+python server.py
+
+5,访问
+
+localhost:3000
+
+
+* 实现指导见https://www.shiyanlou.com/courses/593
