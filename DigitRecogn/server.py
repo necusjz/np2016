@@ -4,6 +4,7 @@ import json
 from ocr import OCRNeuralNetwork
 import numpy as np
 import random
+from collections import namedtuple
 
 #服务器端配置
 HOST_NAME = 'localhost'
