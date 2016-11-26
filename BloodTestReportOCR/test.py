@@ -221,5 +221,5 @@ ru_point = mostclose_ru(info_region)
 region_roi = img[int(lu_point[1]):int(ll_point[1]), int(lu_point[0]):int(ru_point[0])]
 show(region_roi)
 
-# cv2.imwrite("target.jpg", region_roi)
+cv2.imwrite("target.jpg", region_roi)
 
