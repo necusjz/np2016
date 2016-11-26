@@ -24,6 +24,8 @@ sudo apt-get install python-numpy python-scipy
 # 安装sklearn, neural_network_design.py需要调用它做交叉验证
 pip install -U scikit-learn -i https://pypi.mirrors.ustc.edu.cn/simple
 
+# 如果在服务器上运行，修改ocr.js里的HOST为服务器的地址，如http://2016.mc2lab.com
+
 ```
 
 
