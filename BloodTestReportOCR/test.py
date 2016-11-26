@@ -3,9 +3,11 @@ from matplotlib import pyplot as plt
 import numpy as np
 import math
 
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))
+
 def show(img):
     cv2.namedWindow("Image")   
-    cv2.imshow("Image", img)   
+    cv2.imshow("Image", img)
     cv2.waitKey (0)  
     cv2.destroyAllWindows()  
 
@@ -13,10 +15,11 @@ img = cv2.imread('bloodtestreport2.jpg')
 show(img)
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 show(img_gray)
-img_gb = cv2.GaussianBlur(img_gray, (15, 15
-), 0)
-show(img_gb)
-edges = cv2.Canny(img_gb, 5 , 28)
+img_gb = cv2.GaussianBlur(img_gray, (15, 15), 0)
+closed = cv2.morphologyEx(img_gb, cv2.MORPH_CLOSE, kernel)
+opened = cv2.morphologyEx(closed, cv2.MORPH_OPEN, kernel)
+show(opened)
+edges = cv2.Canny(opened, 5 , 28)
 show(edges)
 
 contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -55,10 +58,16 @@ for i in found:
 
 
 def getline(box):
-    point1 = (box[1] + box[2]) / 2
-    point2 = (box[3] + box[0]) / 2
-    lenth = np.dot(point1-point2, point1-point2)
-    return point1, point2, lenth
+    if np.dot(box[1]-box[2],box[1]-box[2]) < np.dot(box[0]-box[1],box[0]-box[1]):
+        point1 = (box[1] + box[2]) / 2
+        point2 = (box[3] + box[0]) / 2
+        lenth = np.dot(point1-point2, point1-point2)
+        return point1, point2, lenth
+    else:
+        point1 = (box[0] + box[1]) / 2
+        point2 = (box[2] + box[3]) / 2
+        lenth = np.dot(point1-point2, point1-point2)
+        return point1, point2, lenth
 
 def cmp(p1, p2):
     delta = p1 - p2
@@ -83,6 +92,13 @@ def linecmp(l1, l2):
     else:
         return 0
 
+def deleteline(line, j):
+    lenth = len(line)
+    for i in range(lenth):
+        if line[i][2] == j[2]:
+            del line[i]
+            return
+
 line = []
 
 for i in found:
@@ -96,14 +112,114 @@ if len(line)>3:
             if i[2] != j[2]:
                 rst = linecmp(i, j)
                 if rst > 0:
-                    line.remove(j)
+                    print("case 1")
+                    deleteline(line, j)
                 elif rst < 0:
-                    line.remove(i)
+                    print("case 2")
+                    deleteline(line, i)
 
+print("three lines:")
 for i in line:
     print((i[0][0],i[0][1]),(i[1][0],i[1][1]))
 
 img_line = img.copy()
 for i in line:
     cv2.line(img_line,(i[0][0],i[0][1]),(i[1][0],i[1][1]),(0,0,255),5)
-    show(img_line)
+show(img_line)
+
+def distance_line(i, j):
+    dis1 = np.dot(i[0]-j[0], i[0]-j[0])
+    dis2 = np.dot(i[0]-j[1], i[0]-j[1])
+    dis3 = np.dot(i[1]-j[0], i[1]-j[0])
+    dis4 = np.dot(i[1]-j[1], i[1]-j[1])
+    return min(dis1, dis2, dis3, dis4)
+
+def findhead(i, j, k):
+    dis = []
+    line = []
+    max_dis = 0
+    dis.append([distance_line(i, j), i, j])
+    dis.append([distance_line(j, k), j, k])
+    dis.append([distance_line(k, i), k, i])
+    dis.sort()
+    if dis[0][1][2]==dis[2][2][2]:
+        return dis[0][2], dis[2][1]
+    if dis[0][2][2]==dis[2][1][2]:
+        return dis[0][1], dis[2][2]
+
+def cross(line1, line2):
+    return line1[0]*line2[1]-line1[1]*line2[0]
+
+line_upper, line_lower = findhead(line[2],line[1],line[0])
+img_head = img.copy()
+print("target upper line:")
+print((line_upper[0][0],line_upper[0][1]),(line_upper[1][0],line_upper[1][1]))
+print("target lower line:")
+print((line_lower[0][0],line_lower[0][1]),(line_lower[1][0],line_lower[1][1]))
+cv2.line(img_head,(line_upper[0][0],line_upper[0][1]),(line_upper[1][0],line_upper[1][1]),(255,0,0),5)
+cv2.line(img_head,(line_lower[0][0],line_lower[0][1]),(line_lower[1][0],line_lower[1][1]),(255,0,0),5)
+show(img_head)
+
+info_region = []
+total_width = line_upper[1]-line_upper[0]
+total_hight = line_lower[0]-line_upper[0]
+startpoint = line_upper[0]
+
+cross_prod = cross(total_width, total_hight)
+if cross_prod <0:
+    total_width = -total_width
+    startpoint = line_upper[1]
+
+info_start = total_width / 4.8 + startpoint
+info_region.append(info_start)
+info_ll = total_hight / 15.5 + info_start
+info_region.append(info_ll)
+info_rl = total_width / 12 + info_ll
+info_region.append(info_rl)
+info_ru = total_width / 12 + info_start
+info_region.append(info_ru)
+
+print("target region:")
+for i in info_region:
+    print(i)
+
+img_region = img.copy()
+cv2.line(img_region,(int(info_region[0][0]),int(info_region[0][1])),(int(info_region[1][0]),int(info_region[1][1])),(0,255,255),5)
+cv2.line(img_region,(int(info_region[1][0]),int(info_region[1][1])),(int(info_region[2][0]),int(info_region[2][1])),(0,255,255),5)
+cv2.line(img_region,(int(info_region[2][0]),int(info_region[2][1])),(int(info_region[3][0]),int(info_region[3][1])),(0,255,255),5)
+cv2.line(img_region,(int(info_region[3][0]),int(info_region[3][1])),(int(info_region[0][0]),int(info_region[0][1])),(0,255,255),5)
+show(img_region)
+
+def sort_points(points):
+    point_lenth = len(points)
+    for i in range(point_lenth):
+        for j in range(point_lenth-1):
+            if points[j][0] > points[j+1][0]:
+                temp = points[j+1]
+                points[j+1] = points[j]
+                points[j] = temp
+    return points
+            
+
+def mostclose_lu(points):
+    points = sort_points(points)
+    if points[0][1]<points[1][1]:
+        return points[0], points[1]
+    else:
+        return points[1], points[0]
+
+def mostclose_ru(points):
+    points = sort_points(points)
+    if points[2][1]<points[3][1]:
+        return points[2]
+    else:
+        return points[3]
+
+lu_point , ll_point = mostclose_lu(info_region)
+ru_point = mostclose_ru(info_region)
+
+region_roi = img[int(lu_point[1]):int(ll_point[1]), int(lu_point[0]):int(ru_point[0])]
+show(region_roi)
+
+# cv2.imwrite("target.jpg", region_roi)
+
