@@ -16,14 +16,14 @@ img = cv2.imread('bloodtestreport2.jpg')
 show(img)
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 show(img_gray)
-img_gb = cv2.GaussianBlur(img_gray, (15, 15), 0)
+img_gb = cv2.GaussianBlur(img_gray, (3, 3), 0)
 closed = cv2.morphologyEx(img_gb, cv2.MORPH_CLOSE, kernel)
 opened = cv2.morphologyEx(closed, cv2.MORPH_OPEN, kernel)
 show(opened)
-edges = cv2.Canny(opened, 5 , 28)
+edges = cv2.Canny(opened, 30 , 70)
 show(edges)
 
-# 调用findContours建立轮廓之间的关系
+# 调用findContours提取轮廓
 contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
 def getbox(i):
@@ -53,10 +53,15 @@ for i in range(len(contours)):
 # 将轮廓逐个显示出来
 for i in found:
     img_dc = img.copy()
-    box = i[1]
-    cv2.drawContours(img_dc, contours, i[0], (0, 255, 0), 3)
-    cv2.drawContours(img_dc,[box], 0, (0,0,255), 2)
+    cv2.drawContours(img_dc, contours, i[0], (0, 255, 0), 1)
     show(img_dc)
+
+# 显示各轮廓的最小外接矩形
+img_box = img.copy()
+for i in found:
+    box = i[1]
+    cv2.drawContours(img_box,[box], 0, (0,0,255), 2)
+show(img_box)
 
 def getline(box):
     if np.dot(box[1]-box[2],box[1]-box[2]) < np.dot(box[0]-box[1],box[0]-box[1]):
@@ -100,7 +105,7 @@ def deleteline(line, j):
             del line[i]
             return
 
-# 将轮廓变为线
+# 将轮廓的最小外接矩形变为线，方法是取两条短边的中点作为线的两个端点
 line = []
 
 for i in found:
@@ -108,7 +113,7 @@ for i in found:
     point1, point2, lenth = getline(box)
     line.append([point1, point2, lenth])
 
-# 把不合适的线删去
+# 把重复的线删去
 if len(line)>3:
     for i in line:
         for j in line:
@@ -119,6 +124,7 @@ if len(line)>3:
                 elif rst < 0:
                     deleteline(line, i)
 
+# 输出要找的三条线
 print("three lines:")
 for i in line:
     print((i[0][0],i[0][1]),(i[1][0],i[1][1]))
@@ -144,9 +150,9 @@ def findhead(i, j, k):
     dis.append([distance_line(k, i), k, i])
     dis.sort()
     if dis[0][1] is dis[2][2]:
-        return dis[0][2], dis[2][1]
+        return dis[0][1], dis[2][1]
     if dis[0][2] is dis[2][1]:
-        return dis[0][1], dis[2][2]
+        return dis[0][2], dis[2][2]
 
 def cross(line1, line2):
     return line1[0]*line2[1]-line1[1]*line2[0]
@@ -173,9 +179,11 @@ if cross_prod <0:
     total_width = -total_width
     startpoint = line_upper[1]
 
+startpoint = startpoint + total_hight / 14
+
 info_start = total_width / 4.8 + startpoint
 info_region.append(info_start)
-info_ll = total_hight / 15.5 + info_start
+info_ll = total_hight / 16.6 + info_start
 info_region.append(info_ll)
 info_rl = total_width / 12 + info_ll
 info_region.append(info_rl)
