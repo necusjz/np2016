@@ -41,8 +41,8 @@ def distance(box):
     delta2 = box[1]-box[3]
     distance1 = np.dot(delta1,delta1)
     distance2 = np.dot(delta2,delta2)
-    distance_arr = (distance1 + distance2) / 2
-    return distance_arr
+    distance_avg = (distance1 + distance2) / 2
+    return distance_avg
 
 # 筛选出对角线足够大的几个轮廓
 found = []
