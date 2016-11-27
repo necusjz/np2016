@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
@@ -11,6 +13,7 @@ def show(img):
     cv2.waitKey (0)  
     cv2.destroyAllWindows()  
 
+# 载入图像，灰度化，开闭运算，描绘边缘
 img = cv2.imread('bloodtestreport2.jpg')
 show(img)
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -22,6 +25,7 @@ show(opened)
 edges = cv2.Canny(opened, 5 , 28)
 show(edges)
 
+# 调用findContours建立轮廓之间的关系
 contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
 hierarchy = hierarchy[0]
@@ -40,6 +44,7 @@ def distance(box):
     distance_arr = (distance1 + distance2) / 2
     return distance_arr
 
+# 筛选出对角线足够大的几个轮廓
 found = []
 
 draw_img = img.copy()
@@ -49,13 +54,13 @@ for i in range(len(contours)):
     if distance_arr > 800000:
         found.append([i, box])
 
+# 将轮廓逐个显示出来
 for i in found:
     img_dc = img.copy()
     box = i[1]
     cv2.drawContours(img_dc, contours, i[0], (0, 255, 0), 3)
     cv2.drawContours(img_dc,[box], 0, (0,0,255), 2)
     show(img_dc)
-
 
 def getline(box):
     if np.dot(box[1]-box[2],box[1]-box[2]) < np.dot(box[0]-box[1],box[0]-box[1]):
@@ -99,6 +104,7 @@ def deleteline(line, j):
             del line[i]
             return
 
+# 将轮廓框体变为线
 line = []
 
 for i in found:
@@ -106,6 +112,7 @@ for i in found:
     point1, point2, lenth = getline(box)
     line.append([point1, point2, lenth])
 
+# 删去不合适的线
 if len(line)>3:
     for i in line:
         for j in line:
@@ -148,6 +155,7 @@ def findhead(i, j, k):
 def cross(line1, line2):
     return line1[0]*line2[1]-line1[1]*line2[0]
 
+# 由三条线来确定表头的位置和表尾的位置
 line_upper, line_lower = findhead(line[2],line[1],line[0])
 img_head = img.copy()
 print("target upper line:")
@@ -158,6 +166,7 @@ cv2.line(img_head,(line_upper[0][0],line_upper[0][1]),(line_upper[1][0],line_upp
 cv2.line(img_head,(line_lower[0][0],line_lower[0][1]),(line_lower[1][0],line_lower[1][1]),(255,0,0),5)
 show(img_head)
 
+# 由表头和表尾确定目标区域的位置
 info_region = []
 total_width = line_upper[1]-line_upper[0]
 total_hight = line_lower[0]-line_upper[0]
@@ -213,6 +222,7 @@ def mostclose_ru(points):
     else:
         return points[3]
 
+# 获取截取区域的左上角，右上角，左下角的坐标，截取图片
 lu_point , ll_point = mostclose_lu(info_region)
 ru_point = mostclose_ru(info_region)
 
