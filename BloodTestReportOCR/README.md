@@ -18,7 +18,7 @@ sudo apt-get install python-numpy
 sudo apt-get install python-opencv
 
 # matplotlib
-sudo apt-get install tcl8.5 tk8.5   python-tk python-matplotlib
+sudo apt-get install tcl8.5 tk8.5   python-tk python-matplotlib 
 
 ```
 
@@ -30,7 +30,8 @@ sudo apt-get install tcl8.5 tk8.5   python-tk python-matplotlib
  - 执行
 
 ```
-python test.py
+python test.py # have problem
+python getinfo_sample.py # it works
 ```
 
  - 运行过程中会显示图像处理的中间结果，每次弹出图片之后按任意键继续
