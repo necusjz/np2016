@@ -1,9 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import cv2
-from matplotlib import pyplot as plt
 import numpy as np
-import math
 
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))
 
@@ -27,8 +25,6 @@ show(edges)
 
 # 调用findContours建立轮廓之间的关系
 contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-hierarchy = hierarchy[0]
 
 def getbox(i):
     rect = cv2.minAreaRect(contours[i])
@@ -100,7 +96,7 @@ def linecmp(l1, l2):
 def deleteline(line, j):
     lenth = len(line)
     for i in range(lenth):
-        if line[i][2] == j[2]:
+        if line[i] is j:
             del line[i]
             return
 
@@ -116,7 +112,7 @@ for i in found:
 if len(line)>3:
     for i in line:
         for j in line:
-            if i[2] != j[2]:
+            if i is not j:
                 rst = linecmp(i, j)
                 if rst > 0:
                     deleteline(line, j)
@@ -139,12 +135,6 @@ def distance_line(i, j):
     dis4 = np.dot(i[1]-j[1], i[1]-j[1])
     return min(dis1, dis2, dis3, dis4)
 
-def issameline(i, j):
-    if i[0].all() == j[0].all() and i[1].all() == j[1].all():
-        return 1
-    else:
-        return 0
-
 def findhead(i, j, k):
     dis = []
     line = []
@@ -153,9 +143,9 @@ def findhead(i, j, k):
     dis.append([distance_line(j, k), j, k])
     dis.append([distance_line(k, i), k, i])
     dis.sort()
-    if issameline(dis[0][1], dis[2][2]):
+    if dis[0][1] is dis[2][2]:
         return dis[0][2], dis[2][1]
-    if issameline(dis[0][2], dis[2][1]):
+    if dis[0][2] is dis[2][1]:
         return dis[0][1], dis[2][2]
 
 def cross(line1, line2):
@@ -235,5 +225,5 @@ ru_point = mostclose_ru(info_region)
 region_roi = img[int(lu_point[1]):int(ll_point[1]), int(lu_point[0]):int(ru_point[0])]
 show(region_roi)
 
-cv2.imwrite("target.jpg", region_roi)
+# cv2.imwrite("target.jpg", region_roi)
 
