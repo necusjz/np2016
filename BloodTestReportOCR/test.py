@@ -104,7 +104,7 @@ def deleteline(line, j):
             del line[i]
             return
 
-# 将轮廓框体变为线
+# 将轮廓变为线
 line = []
 
 for i in found:
@@ -112,7 +112,7 @@ for i in found:
     point1, point2, lenth = getline(box)
     line.append([point1, point2, lenth])
 
-# 删去不合适的线
+# 把不合适的线删去
 if len(line)>3:
     for i in line:
         for j in line:
@@ -139,6 +139,12 @@ def distance_line(i, j):
     dis4 = np.dot(i[1]-j[1], i[1]-j[1])
     return min(dis1, dis2, dis3, dis4)
 
+def issameline(i, j):
+    if i[0].all() == j[0].all() and i[1].all() == j[1].all():
+        return 1
+    else:
+        return 0
+
 def findhead(i, j, k):
     dis = []
     line = []
@@ -147,9 +153,9 @@ def findhead(i, j, k):
     dis.append([distance_line(j, k), j, k])
     dis.append([distance_line(k, i), k, i])
     dis.sort()
-    if dis[0][1][2]==dis[2][2][2]:
+    if issameline(dis[0][1], dis[2][2]):
         return dis[0][2], dis[2][1]
-    if dis[0][2][2]==dis[2][1][2]:
+    if issameline(dis[0][2], dis[2][1]):
         return dis[0][1], dis[2][2]
 
 def cross(line1, line2):
