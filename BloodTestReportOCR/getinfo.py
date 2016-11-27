@@ -107,12 +107,6 @@ def getinfo(path, times):
         dis4 = np.dot(i[1]-j[1], i[1]-j[1])
         return min(dis1, dis2, dis3, dis4)
 
-    def issameline(i, j):
-        if i[0].all() == j[0].all() and i[1].all() == j[1].all():
-            return 1
-        else:
-            return 0
-
     def findhead(i, j, k):
         dis = []
         line = []
