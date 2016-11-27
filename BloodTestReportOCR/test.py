@@ -168,70 +168,30 @@ cv2.line(img_head,(line_upper[0][0],line_upper[0][1]),(line_upper[1][0],line_upp
 cv2.line(img_head,(line_lower[0][0],line_lower[0][1]),(line_lower[1][0],line_lower[1][1]),(255,0,0),5)
 show(img_head)
 
-# 由表头和表尾确定目标区域的位置
-info_region = []
+# 利用叉乘不可交换的特性判断哪个定点是起始点
 total_width = line_upper[1]-line_upper[0]
 total_hight = line_lower[0]-line_upper[0]
-startpoint = line_upper[0]
-
 cross_prod = cross(total_width, total_hight)
 if cross_prod <0:
-    total_width = -total_width
-    startpoint = line_upper[1]
+    temp = line_upper[1]
+    line_upper[1] = line_upper[0]
+    line_upper[0] = temp
+    temp = line_lower[1]
+    line_lower[1] = line_lower[0]
+    line_lower[0] = temp
 
-startpoint = startpoint + total_hight / 14
+# 透视变换
+points = np.array([[line_upper[0][0], line_upper[0][1]], [line_upper[1][0], line_upper[1][1]], 
+                    [line_lower[0][0], line_lower[0][1]], [line_lower[1][0], line_lower[1][1]]],np.float32)
+standard = np.array([[0,0], [1000, 0], [0, 600], [1000, 600]],np.float32)
 
-info_start = total_width / 4.8 + startpoint
-info_region.append(info_start)
-info_ll = total_hight / 16.6 + info_start
-info_region.append(info_ll)
-info_rl = total_width / 12 + info_ll
-info_region.append(info_rl)
-info_ru = total_width / 12 + info_start
-info_region.append(info_ru)
+PerspectiveMatrix = cv2.getPerspectiveTransform(points,standard)
+PerspectiveImg = cv2.warpPerspective(img, PerspectiveMatrix, (1000, 600))
+show(PerspectiveImg)
 
-print("target region:")
-for i in info_region:
-    print(i)
+#输出变换后的图像
+cv2.imwrite('convert.jpg', PerspectiveImg)
 
-img_region = img.copy()
-cv2.line(img_region,(int(info_region[0][0]),int(info_region[0][1])),(int(info_region[1][0]),int(info_region[1][1])),(0,255,255),5)
-cv2.line(img_region,(int(info_region[1][0]),int(info_region[1][1])),(int(info_region[2][0]),int(info_region[2][1])),(0,255,255),5)
-cv2.line(img_region,(int(info_region[2][0]),int(info_region[2][1])),(int(info_region[3][0]),int(info_region[3][1])),(0,255,255),5)
-cv2.line(img_region,(int(info_region[3][0]),int(info_region[3][1])),(int(info_region[0][0]),int(info_region[0][1])),(0,255,255),5)
-show(img_region)
-
-def sort_points(points):
-    point_lenth = len(points)
-    for i in range(point_lenth):
-        for j in range(point_lenth-1):
-            if points[j][0] > points[j+1][0]:
-                temp = points[j+1]
-                points[j+1] = points[j]
-                points[j] = temp
-    return points
-            
-
-def mostclose_lu(points):
-    points = sort_points(points)
-    if points[0][1]<points[1][1]:
-        return points[0], points[1]
-    else:
-        return points[1], points[0]
-
-def mostclose_ru(points):
-    points = sort_points(points)
-    if points[2][1]<points[3][1]:
-        return points[2]
-    else:
-        return points[3]
-
-# 获取截取区域的左上角，右上角，左下角的坐标，截取图片
-lu_point , ll_point = mostclose_lu(info_region)
-ru_point = mostclose_ru(info_region)
-
-region_roi = img[int(lu_point[1]):int(ll_point[1]), int(lu_point[0]):int(ru_point[0])]
+#变换之后分辨率是固定的，按固定区域截图即可
+region_roi = PerspectiveImg[40:80, 194:274]
 show(region_roi)
-
-# cv2.imwrite("target.jpg", region_roi)
-
