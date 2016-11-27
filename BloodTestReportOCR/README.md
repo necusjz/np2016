@@ -17,7 +17,7 @@ sudo apt-get install python-numpy # http://www.numpy.org/
 # 安装opencv
 sudo apt-get install python-opencv # http://opencv.org/
 
-# matplotlib
+# matplotlib代码中好像没有用到，您也可以直接注释到代码头部的from matplotlib import pyplot as plt
 sudo apt-get install tcl8.5 tk8.5   python-tk python-matplotlib # http://matplotlib.org/
 
 ```
