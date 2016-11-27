@@ -13,6 +13,8 @@ def show(img):
 
 # 载入图像，灰度化，开闭运算，描绘边缘
 img = cv2.imread('bloodtestreport2.jpg')
+img_sp = img.shape
+ref_lenth = img_sp[0] * img_sp[1] * 0.25
 show(img)
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 show(img_gray)
@@ -47,7 +49,7 @@ draw_img = img.copy()
 for i in range(len(contours)):
     box = getbox(i)
     distance_arr = distance(box)
-    if distance_arr > 800000:
+    if distance_arr > ref_lenth:
         found.append([i, box])
 
 # 将轮廓逐个显示出来
