@@ -1,9 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import cv2
-from matplotlib import pyplot as plt
 import numpy as np
-import math
 
 def getinfo(path, times):
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))
@@ -18,7 +16,6 @@ def getinfo(path, times):
 
     # 调用findContours建立轮廓之间的关系
     contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    hierarchy = hierarchy[0]
 
     def getbox(i):
         rect = cv2.minAreaRect(contours[i])
@@ -80,7 +77,7 @@ def getinfo(path, times):
     def deleteline(line, j):
         lenth = len(line)
         for i in range(lenth):
-            if line[i][2] == j[2]:
+            if line[i] is j:
                 del line[i]
                 return
 
@@ -96,7 +93,7 @@ def getinfo(path, times):
     if len(line)>3:
         for i in line:
             for j in line:
-                if i[2] != j[2]:
+                if i is not j:
                     rst = linecmp(i, j)
                     if rst > 0:
                         deleteline(line, j)
@@ -124,9 +121,9 @@ def getinfo(path, times):
         dis.append([distance_line(j, k), j, k])
         dis.append([distance_line(k, i), k, i])
         dis.sort()
-        if issameline(dis[0][1], dis[2][2]):
+        if dis[0][1] is dis[2][2]:
             return dis[0][2], dis[2][1]
-        if issameline(dis[0][2], dis[2][1]):
+        if dis[0][2] is dis[2][1]:
             return dis[0][1], dis[2][2]
 
     def cross(line1, line2):
@@ -140,16 +137,21 @@ def getinfo(path, times):
     total_hight = line_lower[0]-line_upper[0]
     startpoint = line_upper[0]
 
+    # 利用叉乘的不可交换性确定起始点
     cross_prod = cross(total_width, total_hight)
     if cross_prod <0:
         total_width = -total_width
         startpoint = line_upper[1]
+    
+    #由于透视的问题，读取右边的数据以右轴作为参考
+    total_hight_r = line_lower[1]-line_upper[1] 
+    startpoint_r = startpoint + total_width / 2
 
-    def getregion(i, startpoint):
+    def getregion(i, startpoint, ref_axis):
         info_region = []
         info_start = total_width / 4.8 + startpoint
         info_region.append(info_start)
-        info_ll = total_hight / 15.5 + info_start
+        info_ll = ref_axis / 15 + info_start
         info_region.append(info_ll)
         info_rl = total_width / 12 + info_ll
         info_region.append(info_rl)
@@ -188,7 +190,14 @@ def getinfo(path, times):
         region_roi = img[int(lu_point[1]):int(ll_point[1]), int(lu_point[0]):int(ru_point[0])]
         cv2.imwrite(filename, region_roi)
 
-        return startpoint + total_hight / 15.5
+        return startpoint + ref_axis / 14
 
-    for i in range(times):
-        startpoint = getregion(i, startpoint)
+    if times < 14 and times > 0:
+        for i in range(int(times)):
+            startpoint = getregion(i, startpoint, total_hight)
+    elif times >= 14:
+        for i in range(13):
+            startpoint = getregion(i, startpoint, total_hight)
+        startpoint = startpoint_r
+        for i in range(int(times)-13):
+            startpoint = getregion(i+13, startpoint, total_hight_r)
