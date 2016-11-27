@@ -17,6 +17,9 @@ sudo apt-get install python-numpy
 # 安装opencv
 sudo apt-get install python-opencv
 
+# matplotlib
+sudo apt-get install tcl8.5 tk8.5   python-tk python-matplotlib
+
 ```
 
 
