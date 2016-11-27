@@ -112,10 +112,8 @@ if len(line)>3:
             if i[2] != j[2]:
                 rst = linecmp(i, j)
                 if rst > 0:
-                    print("case 1")
                     deleteline(line, j)
                 elif rst < 0:
-                    print("case 2")
                     deleteline(line, i)
 
 print("three lines:")
