@@ -14,7 +14,7 @@ def getinfo(path, times):
     opened = cv2.morphologyEx(closed, cv2.MORPH_OPEN, kernel)
     edges = cv2.Canny(opened, 5 , 28)
 
-    # 调用findContours建立轮廓之间的关系
+    # 调用findContours提取轮廓
     contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     def getbox(i):
