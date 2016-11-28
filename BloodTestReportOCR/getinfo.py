@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import os 
 
-default = [3, 70, 50, 0.25, 0.0001]
+default = [3, 70, 30, 0.25, 0.0001]
 
 def getinfo(path, num, param):
     #载入参数
