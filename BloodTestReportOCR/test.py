@@ -28,6 +28,7 @@ show(edges)
 # 调用findContours提取轮廓
 contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
+
 def getbox(i):
     rect = cv2.minAreaRect(contours[i])
     box = cv2.cv.BoxPoints(rect)
@@ -80,7 +81,7 @@ def getline(box):
 def cmp(p1, p2):
     delta = p1 - p2
     distance = np.dot(delta, delta)
-    if distance < 1000:
+    if distance < img_sp[0] * img_sp[1] * 0.0001:
         return 1
     else:
         return 0
@@ -170,7 +171,7 @@ cv2.line(img_head,(line_upper[0][0],line_upper[0][1]),(line_upper[1][0],line_upp
 cv2.line(img_head,(line_lower[0][0],line_lower[0][1]),(line_lower[1][0],line_lower[1][1]),(255,0,0),5)
 show(img_head)
 
-# 利用叉乘不可交换的特性判断哪个顶点是起始点
+# 利用叉乘不可交换的特性判断哪个定点是起始点
 total_width = line_upper[1]-line_upper[0]
 total_hight = line_lower[0]-line_upper[0]
 cross_prod = cross(total_width, total_hight)
@@ -197,3 +198,4 @@ cv2.imwrite('convert.jpg', PerspectiveImg)
 #变换之后分辨率是固定的，按固定区域截图即可
 region_roi = PerspectiveImg[40:80, 194:274]
 show(region_roi)
+cv2.imwrite('data0.jpg', PerspectiveImg)
