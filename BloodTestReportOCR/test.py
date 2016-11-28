@@ -170,7 +170,7 @@ cv2.line(img_head,(line_upper[0][0],line_upper[0][1]),(line_upper[1][0],line_upp
 cv2.line(img_head,(line_lower[0][0],line_lower[0][1]),(line_lower[1][0],line_lower[1][1]),(255,0,0),5)
 show(img_head)
 
-# 利用叉乘不可交换的特性判断哪个定点是起始点
+# 利用叉乘不可交换的特性判断哪个顶点是起始点
 total_width = line_upper[1]-line_upper[0]
 total_hight = line_lower[0]-line_upper[0]
 cross_prod = cross(total_width, total_hight)
