@@ -12,7 +12,7 @@ def show(img):
     cv2.destroyAllWindows()  
 
 # 载入图像，灰度化，开闭运算，描绘边缘
-img = cv2.imread('bloodtestreport2.jpg')
+img = cv2.imread('origin_pics/bloodtestreport2.jpg')
 img_sp = img.shape
 ref_lenth = img_sp[0] * img_sp[1] * 0.25
 show(img)
