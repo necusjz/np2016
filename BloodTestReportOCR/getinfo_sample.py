@@ -1,6 +1,6 @@
 import getinfo
 
-path = 'origin_pics/bloodtestreport2.jpg'
-num = 5
+path = 'origin_pics/bloodtestreport3.jpg'
+num = 13
 
 getinfo.getinfo(path,num)

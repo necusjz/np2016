@@ -150,7 +150,7 @@ def getinfo(path, num):
     #使用透视变换将表格区域转换为一个1000*600的图
     PerspectiveMatrix = cv2.getPerspectiveTransform(points,standard)
     PerspectiveImg = cv2.warpPerspective(img, PerspectiveMatrix, (1000, 600))
-    cv2.imwrite('1.jpg', PerspectiveImg)
+    cv2.imwrite('temp_pics/1.jpg', PerspectiveImg)
 
     #转换后的图分辨率是已知的，所以直接从这个点开始读数据就可以了
     startpoint = [199, 40]
@@ -160,7 +160,7 @@ def getinfo(path, num):
 
     def getimg(i, x, y):
         region_roi = PerspectiveImg[y+skep_lenth : y+vertical_lenth, x : x+lateral_lenth]
-        filename = 'data' + str(i) + '.jpg'
+        filename = 'temp_pics/data' + str(i) + '.jpg'
         cv2.imwrite(filename, region_roi)
 
     #输出图片

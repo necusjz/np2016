@@ -1,1 +1,2 @@
-BloodTestReportOCR/temp_pics/
+BloodTestReportOCR/temp_pics/*.jpeg
+*.pyc
