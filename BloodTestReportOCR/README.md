@@ -25,11 +25,12 @@ sudo apt-get install tcl8.5 tk8.5   python-tk python-matplotlib # http://matplot
 
 ####运行
 
- - 将test.py和bloodtestreport2.jpg放在同一文件夹下
+ - 原图在BloodTestReportOCR/origin_pics文件夹下，剪切出来的图片在BloodTestReportOCR/temp_pics文件下
 
  - 执行
 
 ```
+cd  BloodTestReportOCR
 python test.py # have problem
 python getinfo_sample.py # it works
 ```
@@ -47,7 +48,7 @@ getinfo(path, times)
 ```
 path是bloodtestreport2.jpg的路径，times则是读取数据的数量。
 
-函数输出为target0.jpg,target1.jpg......等一系列图片，分别是白细胞计数，中性粒细胞记数等的数值的图片。
+函数输出为data0.jpg,data1.jpg......等一系列图片，分别是白细胞计数，中性粒细胞记数等的数值的图片。
 
 我还没做图形旋转的功能。正向的图片截出来的图是正向的，旋转了90度，180度，270度的图片截出来的图也是旋转了90度，180度，270度的。
 
