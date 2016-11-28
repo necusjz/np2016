@@ -1,24 +1,23 @@
 # -*- coding: UTF-8 -*-
 
 import cv2
-from matplotlib import pyplot as plt
 import numpy as np
-import math
 
-def getinfo(path, times):
+def getinfo(path, num):
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))
 
     # 载入图像，灰度化，开闭运算，描绘边缘
     img = cv2.imread(path)
+    img_sp = img.shape
+    ref_lenth = img_sp[0] * img_sp[1] * 0.25
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img_gb = cv2.GaussianBlur(img_gray, (15, 15), 0)
     closed = cv2.morphologyEx(img_gb, cv2.MORPH_CLOSE, kernel)
     opened = cv2.morphologyEx(closed, cv2.MORPH_OPEN, kernel)
     edges = cv2.Canny(opened, 5 , 28)
 
-    # 调用findContours建立轮廓之间的关系
+    # 调用findContours提取轮廓
     contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    hierarchy = hierarchy[0]
 
     def getbox(i):
         rect = cv2.minAreaRect(contours[i])
@@ -39,7 +38,7 @@ def getinfo(path, times):
     for i in range(len(contours)):
         box = getbox(i)
         distance_arr = distance(box)
-        if distance_arr > 800000:
+        if distance_arr > ref_lenth:
             found.append([i, box])
 
     def getline(box):
@@ -80,7 +79,7 @@ def getinfo(path, times):
     def deleteline(line, j):
         lenth = len(line)
         for i in range(lenth):
-            if line[i][2] == j[2]:
+            if line[i] is j:
                 del line[i]
                 return
 
@@ -96,7 +95,7 @@ def getinfo(path, times):
     if len(line)>3:
         for i in line:
             for j in line:
-                if i[2] != j[2]:
+                if i is not j:
                     rst = linecmp(i, j)
                     if rst > 0:
                         deleteline(line, j)
@@ -110,12 +109,6 @@ def getinfo(path, times):
         dis4 = np.dot(i[1]-j[1], i[1]-j[1])
         return min(dis1, dis2, dis3, dis4)
 
-    def issameline(i, j):
-        if i[0].all() == j[0].all() and i[1].all() == j[1].all():
-            return 1
-        else:
-            return 0
-
     def findhead(i, j, k):
         dis = []
         line = []
@@ -124,10 +117,10 @@ def getinfo(path, times):
         dis.append([distance_line(j, k), j, k])
         dis.append([distance_line(k, i), k, i])
         dis.sort()
-        if issameline(dis[0][1], dis[2][2]):
-            return dis[0][2], dis[2][1]
-        if issameline(dis[0][2], dis[2][1]):
-            return dis[0][1], dis[2][2]
+        if dis[0][1] is dis[2][2]:
+            return dis[0][1], dis[2][1]
+        if dis[0][2] is dis[2][1]:
+            return dis[0][2], dis[2][2]
 
     def cross(line1, line2):
         return line1[0]*line2[1]-line1[1]*line2[0]
@@ -138,57 +131,49 @@ def getinfo(path, times):
     # 由表头和表尾确定目标区域的位置
     total_width = line_upper[1]-line_upper[0]
     total_hight = line_lower[0]-line_upper[0]
-    startpoint = line_upper[0]
 
+    # 利用叉乘的不可交换性确定起始点
     cross_prod = cross(total_width, total_hight)
     if cross_prod <0:
-        total_width = -total_width
-        startpoint = line_upper[1]
+        temp = line_upper[1]
+        line_upper[1] = line_upper[0]
+        line_upper[0] = temp
+        temp = line_lower[1]
+        line_lower[1] = line_lower[0]
+        line_lower[0] = temp
 
-    def getregion(i, startpoint):
-        info_region = []
-        info_start = total_width / 4.8 + startpoint
-        info_region.append(info_start)
-        info_ll = total_hight / 15.5 + info_start
-        info_region.append(info_ll)
-        info_rl = total_width / 12 + info_ll
-        info_region.append(info_rl)
-        info_ru = total_width / 12 + info_start
-        info_region.append(info_ru)
+    #设定透视变换的矩阵
+    points = np.array([[line_upper[0][0], line_upper[0][1]], [line_upper[1][0], line_upper[1][1]], 
+                    [line_lower[0][0], line_lower[0][1]], [line_lower[1][0], line_lower[1][1]]],np.float32)
+    standard = np.array([[0,0], [1000, 0], [0, 600], [1000, 600]],np.float32)
 
-        def sort_points(points):
-            point_lenth = len(points)
-            for i in range(point_lenth):
-                for j in range(point_lenth-1):
-                    if points[j][0] > points[j+1][0]:
-                        temp = points[j+1]
-                        points[j+1] = points[j]
-                        points[j] = temp
-            return points
+    #使用透视变换将表格区域转换为一个1000*600的图
+    PerspectiveMatrix = cv2.getPerspectiveTransform(points,standard)
+    PerspectiveImg = cv2.warpPerspective(img, PerspectiveMatrix, (1000, 600))
+    cv2.imwrite('1.jpg', PerspectiveImg)
 
-        def mostclose_lu(points):
-            points = sort_points(points)
-            if points[0][1]<points[1][1]:
-                return points[0], points[1]
-            else:
-                return points[1], points[0]
+    #转换后的图分辨率是已知的，所以直接从这个点开始读数据就可以了
+    startpoint = [199, 40]
+    skep_lenth = 5
+    vertical_lenth = 37
+    lateral_lenth = 80
 
-        def mostclose_ru(points):
-            points = sort_points(points)
-            if points[2][1]<points[3][1]:
-                return points[2]
-            else:
-                return points[3]
-
-        # 获取截取区域的左上角，右上角，左下角的坐标，截取图片
-        lu_point , ll_point = mostclose_lu(info_region)
-        ru_point = mostclose_ru(info_region)
-        filename = 'target' + str(i) + '.jpg'
-
-        region_roi = img[int(lu_point[1]):int(ll_point[1]), int(lu_point[0]):int(ru_point[0])]
+    def getimg(i, x, y):
+        region_roi = PerspectiveImg[y+skep_lenth : y+vertical_lenth, x : x+lateral_lenth]
+        filename = 'data' + str(i) + '.jpg'
         cv2.imwrite(filename, region_roi)
 
-        return startpoint + total_hight / 15.5
-
-    for i in range(times):
-        startpoint = getregion(i, startpoint)
+    #输出图片
+    if num <= 13 and num > 0:
+        for i in range(num):
+            getimg(int(i), startpoint[0], startpoint[1])
+            startpoint[1] = startpoint[1] + 40
+    elif num > 13:
+        for i in range(13):
+            getimg(int(i), startpoint[0], startpoint[1])
+            startpoint[1] = startpoint[1] + 40
+        startpoint = [702, 40]
+        for i in range(num-13):
+            getimg(int(i+13), startpoint[0], startpoint[1])
+            startpoint[1] = startpoint[1] + 40
+            
