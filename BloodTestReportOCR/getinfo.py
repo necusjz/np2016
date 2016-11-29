@@ -193,7 +193,7 @@ def getinfo(path, num, param):
     cv2.imwrite(output_path + 'time.jpg', img_time)
 
     #转换后的图分辨率是已知的，所以直接从这个点开始读数据就可以了
-    startpoint = [203, 120]
+    startpoint = [199, 132]
     vertical_lenth = 37
     lateral_lenth = 80
 
@@ -218,7 +218,7 @@ def getinfo(path, num, param):
             getobjname(int(i), 0, startpoint[1])
             getimg(int(i), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
-        startpoint = [702, 120]
+        startpoint = [700, 135]
         for i in range(num-13):
             getobjname(int(i+13), 510, startpoint[1])
             getimg(int(i+13), startpoint[0], startpoint[1])
