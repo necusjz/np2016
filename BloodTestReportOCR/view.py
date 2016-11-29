@@ -61,3 +61,6 @@ def find_file(fid):
 		return Response(file['content'], mimetype='image/' + file['mime'])
 	except bson.errors.InvalidId:
 		flask.abort(404)
+
+if __name__ == '__main__':
+    app.run(port=app.config['SERVER_PORT'])
