@@ -146,7 +146,7 @@ coll = db.restaurants
 
 # update
 from datetime import datetime
-'''
+'''Python
 The operation returns an InsertOneResult object, 
 which includes an attribute inserted_id that contains the _id of the inserted document. 
 Access the inserted_id attribute:
