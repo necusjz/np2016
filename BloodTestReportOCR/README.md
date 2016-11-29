@@ -4,7 +4,6 @@
 
 
 ## 运行环境
-运行需要opencv、numpy、tesseract、pytesseract
 
 ```
 
@@ -24,7 +23,7 @@ sudo pip install pytesseract
 sudo pip install Flask
 sudo apt-get install mongodb # 如果找不到可以先sudo apt-get update
 sudo service mongodb started
-pip install pymongo
+sudo pip install pymongo
 
 ```
 
