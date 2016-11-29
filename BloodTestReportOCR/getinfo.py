@@ -2,19 +2,29 @@
 
 import cv2
 import numpy as np
+import os 
 
-def getinfo(path, num):
+default = [3, 70, 30, 0.25, 0.0001]
+
+def getinfo(path, num, param):
+    #载入参数
+    gb_param = param[0] #必须是奇数
+    canny_param_upper = param[1]
+    canny_param_lower = param[2]
+    ref_lenth_multiplier = param[3]
+    ref_close_multiplier = param[4]
+
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))
 
     # 载入图像，灰度化，开闭运算，描绘边缘
     img = cv2.imread(path)
     img_sp = img.shape
-    ref_lenth = img_sp[0] * img_sp[1] * 0.25
+    ref_lenth = img_sp[0] * img_sp[1] * ref_lenth_multiplier
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img_gb = cv2.GaussianBlur(img_gray, (15, 15), 0)
+    img_gb = cv2.GaussianBlur(img_gray, (gb_param, gb_param), 0)
     closed = cv2.morphologyEx(img_gb, cv2.MORPH_CLOSE, kernel)
     opened = cv2.morphologyEx(closed, cv2.MORPH_OPEN, kernel)
-    edges = cv2.Canny(opened, 5 , 28)
+    edges = cv2.Canny(opened, canny_param_lower , canny_param_upper)
 
     # 调用findContours提取轮廓
     contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -56,7 +66,7 @@ def getinfo(path, num):
     def cmp(p1, p2):
         delta = p1 - p2
         distance = np.dot(delta, delta)
-        if distance < 1000:
+        if distance < img_sp[0] * img_sp[1] * ref_close_multiplier:
             return 1
         else:
             return 0
@@ -122,8 +132,8 @@ def getinfo(path, num):
         if dis[0][2] is dis[2][1]:
             return dis[0][2], dis[2][2]
 
-    def cross(line1, line2):
-        return line1[0]*line2[1]-line1[1]*line2[0]
+    def cross(vector1, vector2):
+        return vector1[0]*vector2[1]-vector1[1]*vector2[0]
 
     # 由三条线来确定表头的位置和表尾的位置
     line_upper, line_lower = findhead(line[2],line[1],line[0])
@@ -142,38 +152,75 @@ def getinfo(path, num):
         line_lower[1] = line_lower[0]
         line_lower[0] = temp
 
+    #由于需要表格外的数据，所以变换区域需要再向上和向下延伸
+    left_axis = line_lower[0] - line_upper[0]
+    right_axis = line_lower[1] - line_upper[1]
+    line_upper[0] = line_upper[0] - left_axis * 2 / 15
+    line_upper[1] = line_upper[1] - right_axis * 2 / 15
+    line_lower[0] = line_lower[0] + left_axis * 2 / 15
+    line_lower[1] = line_lower[1] + right_axis * 2 / 15
+
     #设定透视变换的矩阵
     points = np.array([[line_upper[0][0], line_upper[0][1]], [line_upper[1][0], line_upper[1][1]], 
                     [line_lower[0][0], line_lower[0][1]], [line_lower[1][0], line_lower[1][1]]],np.float32)
-    standard = np.array([[0,0], [1000, 0], [0, 600], [1000, 600]],np.float32)
+    standard = np.array([[0,0], [1000, 0], [0, 760], [1000, 760]],np.float32)
 
     #使用透视变换将表格区域转换为一个1000*600的图
     PerspectiveMatrix = cv2.getPerspectiveTransform(points,standard)
-    PerspectiveImg = cv2.warpPerspective(img, PerspectiveMatrix, (1000, 600))
-    cv2.imwrite('1.jpg', PerspectiveImg)
+    PerspectiveImg = cv2.warpPerspective(img, PerspectiveMatrix, (1000, 760))
+
+    #设置输出路径，创建目录
+    output_path = 'temp_pics/'
+    if not(os.path.exists(output_path)):
+        os.makedirs(output_path)
+
+    # #设置输出路径，创建目录
+    # origin_filename = os.path.basename(path)
+    # origin_filename = origin_filename.strip('.jpg')
+    # output_path = 'temp_pics/' + origin_filename + '/'
+    # if not(os.path.exists(output_path)):
+    #     os.makedirs(output_path)
+
+    #输出透视变换后的图片
+    cv2.imwrite(output_path + 'source.jpg', PerspectiveImg)
+
+    #输出名字
+    img_name = PerspectiveImg[15 : 60, 97 : 250]
+    cv2.imwrite(output_path + 'name.jpg', img_name)
+
+    #
+    img_time = PerspectiveImg[722 : 760, 430 : 630]
+    cv2.imwrite(output_path + 'time.jpg', img_time)
 
     #转换后的图分辨率是已知的，所以直接从这个点开始读数据就可以了
-    startpoint = [199, 40]
-    skep_lenth = 5
+    startpoint = [199, 132]
     vertical_lenth = 37
     lateral_lenth = 80
 
+    def getobjname(i, x, y):
+        region_roi = PerspectiveImg[y : y+vertical_lenth, x : x+200]
+        filename = output_path + 'p' + str(i) + '.jpg'
+        cv2.imwrite(filename, region_roi)
+
     def getimg(i, x, y):
-        region_roi = PerspectiveImg[y+skep_lenth : y+vertical_lenth, x : x+lateral_lenth]
-        filename = 'data' + str(i) + '.jpg'
+        region_roi = PerspectiveImg[y : y+vertical_lenth, x : x+lateral_lenth]
+        filename = output_path + 'data' + str(i) + '.jpg'
         cv2.imwrite(filename, region_roi)
 
     #输出图片
     if num <= 13 and num > 0:
         for i in range(num):
+            getobjname(int(i), 0, startpoint[1])
             getimg(int(i), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
     elif num > 13:
         for i in range(13):
+            getobjname(int(i), 0, startpoint[1])
             getimg(int(i), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
-        startpoint = [702, 40]
+        startpoint = [700, 135]
         for i in range(num-13):
+            getobjname(int(i+13), 510, startpoint[1])
             getimg(int(i+13), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
             

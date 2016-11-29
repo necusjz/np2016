@@ -1,1 +1,4 @@
-BloodTestReportOCR/temp_pics/
+BloodTestReportOCR/temp_pics/*.jpg
+BloodTestReportOCR/data.csv
+BloodTestReportOCR/temp_nums
+*.pyc

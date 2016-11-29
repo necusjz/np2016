@@ -12,21 +12,22 @@ def show(img):
     cv2.destroyAllWindows()  
 
 # 载入图像，灰度化，开闭运算，描绘边缘
-img = cv2.imread('origin_pics/bloodtestreport2.jpg')
+img = cv2.imread('origin_pics/bloodtestreport.jpg')
 img_sp = img.shape
 ref_lenth = img_sp[0] * img_sp[1] * 0.25
 show(img)
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 show(img_gray)
-img_gb = cv2.GaussianBlur(img_gray, (3, 3), 0)
+img_gb = cv2.GaussianBlur(img_gray, (7, 7), 0)
 closed = cv2.morphologyEx(img_gb, cv2.MORPH_CLOSE, kernel)
 opened = cv2.morphologyEx(closed, cv2.MORPH_OPEN, kernel)
 show(opened)
-edges = cv2.Canny(opened, 30 , 70)
+edges = cv2.Canny(opened, 35 , 50)
 show(edges)
 
 # 调用findContours提取轮廓
 contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
 
 def getbox(i):
     rect = cv2.minAreaRect(contours[i])
@@ -80,7 +81,7 @@ def getline(box):
 def cmp(p1, p2):
     delta = p1 - p2
     distance = np.dot(delta, delta)
-    if distance < 1000:
+    if distance < img_sp[0] * img_sp[1] * 0.0005:
         return 1
     else:
         return 0
@@ -170,7 +171,7 @@ cv2.line(img_head,(line_upper[0][0],line_upper[0][1]),(line_upper[1][0],line_upp
 cv2.line(img_head,(line_lower[0][0],line_lower[0][1]),(line_lower[1][0],line_lower[1][1]),(255,0,0),5)
 show(img_head)
 
-# 利用叉乘不可交换的特性判断哪个顶点是起始点
+# 利用叉乘不可交换的特性判断哪个定点是起始点
 total_width = line_upper[1]-line_upper[0]
 total_hight = line_lower[0]-line_upper[0]
 cross_prod = cross(total_width, total_hight)
@@ -182,18 +183,26 @@ if cross_prod <0:
     line_lower[1] = line_lower[0]
     line_lower[0] = temp
 
+left_axis = line_lower[0] - line_upper[0]
+right_axis = line_lower[1] - line_upper[1]
+line_upper[0] = line_upper[0] - left_axis * 2 / 15
+line_upper[1] = line_upper[1] - right_axis * 2 / 15
+line_lower[0] = line_lower[0] + left_axis * 2 / 15
+line_lower[1] = line_lower[1] + right_axis * 2 / 15
+
 # 透视变换
 points = np.array([[line_upper[0][0], line_upper[0][1]], [line_upper[1][0], line_upper[1][1]], 
                     [line_lower[0][0], line_lower[0][1]], [line_lower[1][0], line_lower[1][1]]],np.float32)
-standard = np.array([[0,0], [1000, 0], [0, 600], [1000, 600]],np.float32)
+standard = np.array([[0,0], [1000, 0], [0, 760], [1000, 760]],np.float32)
 
 PerspectiveMatrix = cv2.getPerspectiveTransform(points,standard)
-PerspectiveImg = cv2.warpPerspective(img, PerspectiveMatrix, (1000, 600))
+PerspectiveImg = cv2.warpPerspective(img, PerspectiveMatrix, (1000, 760))
 show(PerspectiveImg)
 
 #输出变换后的图像
 cv2.imwrite('convert.jpg', PerspectiveImg)
 
 #变换之后分辨率是固定的，按固定区域截图即可
-region_roi = PerspectiveImg[40:80, 194:274]
+region_roi = PerspectiveImg[135:165, 194:274]
 show(region_roi)
+cv2.imwrite('data0.jpg', PerspectiveImg)
