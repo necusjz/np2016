@@ -5,7 +5,7 @@
 
 
 ####运行环境
-运行需要opencv和numpy
+运行需要opencv、numpy、tesseract、pytesseract
 
 ```
 
@@ -14,6 +14,12 @@ sudo apt-get install python-numpy # http://www.numpy.org/
 
 # 安装opencv
 sudo apt-get install python-opencv # http://opencv.org/
+
+##安装tesseract
+sudo apt-get install tesseract-ocr
+
+##安装pytesseract
+sudo pip install pytesseract
 
 ```
 
@@ -24,6 +30,7 @@ sudo apt-get install python-opencv # http://opencv.org/
 cd  BloodTestReportOCR
 python test.py
 python getinfo_sample.py
+python ocr.py
 ```
 
  - 运行过程中会显示图像处理的中间结果，每次弹出图片之后按任意键继续
@@ -63,3 +70,6 @@ p1是高斯模糊的参数，p2和p3是canny边缘检测的高低阈值，p4和p
 
 ##getinfo_sample.py
 这是一个调用getinfo.py的范例
+
+##ocr.py
+将temp_pics文件夹下的图片识别到temp_nums文件下
