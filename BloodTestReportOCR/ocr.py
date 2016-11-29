@@ -21,8 +21,11 @@ for i in range(22):
 	# 去除空格，去除负号
 	tempstr = tempstr.replace(" ",'')
 	tempstr = tempstr.replace("-",' ')
+	tempstr = tempstr.replace(".", ' ')
 	tempstr = tempstr.lstrip()
 	tempstr = tempstr.rstrip()
+	tempstr = tempstr.replace("   ", ' ')
+	tempstr = tempstr.replace("  ", ' ')
 	tempstr = tempstr.replace(" ", '.')
 	print tempstr
 	result.append(tempstr)
