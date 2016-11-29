@@ -63,4 +63,4 @@ def find_file(fid):
 		flask.abort(404)
 
 if __name__ == '__main__':
-    app.run(port=app.config['SERVER_PORT'])
+    app.run(host=app.config['SERVER_HOST'],port=app.config['SERVER_PORT'])
