@@ -192,3 +192,8 @@ cursor = db.restaurants.find({"address.zipcode": "10075"})
 for document in cursor:
 	print(document)
 ```
+### Deploy
+```
+python view.py
+```
+在浏览器输入localhost:7777访问
