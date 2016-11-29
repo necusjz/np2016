@@ -25,7 +25,7 @@ sudo pip install pymongo
 
 ```
 cd  BloodTestReportOCR
-python view.py # upload图像
+python view.py # upload图像,在浏览器打开http://yourip:8080
 python getinfo_sample.py # 自动剪切
 python ocr.py # 识别
 ```
