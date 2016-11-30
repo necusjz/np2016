@@ -176,7 +176,7 @@ def getinfo(path, num, param):
 
     # #设置输出路径，创建目录
     # origin_filename = os.path.basename(path)
-    # origin_filename = origin_filename.strip('.jpg')
+    # origin_filename = origin_filename.rstrip('.jpg')
     # output_path = 'temp_pics/' + origin_filename + '/'
     # if not(os.path.exists(output_path)):
     #     os.makedirs(output_path)
@@ -184,11 +184,15 @@ def getinfo(path, num, param):
     #输出透视变换后的图片
     cv2.imwrite(output_path + 'source.jpg', PerspectiveImg)
 
-    #输出名字
-    img_name = PerspectiveImg[15 : 60, 97 : 250]
-    cv2.imwrite(output_path + 'name.jpg', img_name)
+    #输出年龄
+    img_age = PerspectiveImg[15 : 70, 585 : 690]
+    cv2.imwrite(output_path + 'age.jpg', img_age)
 
-    #
+    #输出性别
+    img_gender = PerspectiveImg[15 : 58, 365 : 420]
+    cv2.imwrite(output_path + 'gender.jpg', img_gender)
+
+    #输出时间
     img_time = PerspectiveImg[722 : 760, 430 : 630]
     cv2.imwrite(output_path + 'time.jpg', img_time)
 
