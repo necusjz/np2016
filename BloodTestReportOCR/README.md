@@ -72,12 +72,22 @@ p1是高斯模糊的参数，p2和p3是canny边缘检测的高低阈值，p4和p
 
 ## ocr.py
 
-将temp_pics文件夹下的图片识别到temp_nums文件下
-
+识别temp_pics文件夹下的数字图片和中文图片，将结果分别存入digitdata.csv和chidata.csv
+（识别中文时候前边的数字干扰很大，不知道可不可以不用数字）
 #### Binarization.py
 
 将图片进行二值化和去噪操作
 
+## imgproc.py 
+将识别的图像进行处理二值化等操作，提高识别率
+包括对中文和数字的处理
+
+## digits
+将该文件替换Tesseract-OCR\tessdata\configs中的digits
+## Bloodtest
+将该文件添加到Tesseract-OCR\tessdata\configs中（tesseract 3.03以下的版本可能不支持，可能会影响中文的检测）
+
 ## view.py 
 
 Web 端上传图片到服务器，存入mongodb并获取oid
+
