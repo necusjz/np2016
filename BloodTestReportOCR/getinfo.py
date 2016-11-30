@@ -112,6 +112,10 @@ def getinfo(path, num, param):
                     elif rst < 0:
                         deleteline(line, i)
 
+    #检测出的线数量过多就返回-1跳出
+    if len(line)>3:
+        return -1
+    
     def distance_line(i, j):
         dis1 = np.dot(i[0]-j[0], i[0]-j[0])
         dis2 = np.dot(i[0]-j[1], i[0]-j[1])
@@ -228,3 +232,6 @@ def getinfo(path, num, param):
             getimg(int(i+13), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
             
+
+    #正常结束返回0
+    return 0
