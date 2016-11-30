@@ -113,7 +113,7 @@ def getinfo(path, num, param):
                         deleteline(line, i)
 
     #检测出的线数量过多就返回-1跳出
-    if len(line)>3:
+    if len(line) != 3:
         return -1
     
     def distance_line(i, j):
