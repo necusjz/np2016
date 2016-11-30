@@ -6,7 +6,7 @@ import os
 
 default = [3, 70, 30, 0.25, 0.0001]
 
-def getinfo(path, num, param):
+def autocut(path, num, param):
     #载入参数
     gb_param = param[0] #必须是奇数
     canny_param_upper = param[1]

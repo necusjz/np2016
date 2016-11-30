@@ -29,17 +29,16 @@ sudo pip install pymongo
 ```
 cd  BloodTestReportOCR
 python view.py # upload图像,在浏览器打开http://yourip:8080
-python getinfo_sample.py # 自动剪切
-python ocr.py # 识别
+python test.py # 自动剪切 & 识别
 ```
 
-## getinfo.py
+## autocut.py
 
-getinfo.py把上述算法打包成了函数。
+autocut.py把上述算法打包成了函数。
 
 函数原型为
 ```
-getinfo(path, times, param)
+autocut(path, times, param)
 ```
 path是bloodtestreport2.jpg的路径，times则是读取数据的数量。
 param是一些算法的参数，不设置的话填入getinfo.defalut即可。
@@ -66,18 +65,20 @@ p1是高斯模糊的参数，p2和p3是canny边缘检测的高低阈值，p4和p
  - 图片中应该包含全部的三条黑线
  - 图片尽量不要包含化验单的边缘，如果有的话，请尽量避开有阴影的边缘。
 
-#### getinfo_sample.py
-
-这是一个调用getinfo.py的范例
 
 ## ocr.py
 
-将temp_pics文件夹下的图片识别到temp_nums文件下
+识别temp_pics文件夹下的数字图片和中文图片，将结果分别存入digitdata.csv和chidata.csv
+（识别中文时候前边的数字干扰很大，不知道可不可以不用数字）
 
-#### Binarization.py
+#### imgproc.py 
+将识别的图像进行处理二值化等操作，提高识别率
+包括对中文和数字的处理
 
-将图片进行二值化和去噪操作
+#### digits
+将该文件替换Tesseract-OCR\tessdata\configs中的digits
 
 ## view.py 
 
 Web 端上传图片到服务器，存入mongodb并获取oid
+
