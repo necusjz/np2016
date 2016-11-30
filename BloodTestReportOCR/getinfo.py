@@ -112,7 +112,7 @@ def getinfo(path, num, param):
                     elif rst < 0:
                         deleteline(line, i)
 
-    #检测出的线数量过多就返回-1跳出
+    #检测出的线数量不对就返回-1跳出
     if len(line) != 3:
         return -1
     
@@ -206,7 +206,7 @@ def getinfo(path, num, param):
     lateral_lenth = 80
 
     def getobjname(i, x, y):
-        region_roi = PerspectiveImg[y : y+vertical_lenth, x : x+200]
+        region_roi = PerspectiveImg[y : y+vertical_lenth, x : x+175]
         filename = output_path + 'p' + str(i) + '.jpg'
         cv2.imwrite(filename, region_roi)
 
@@ -218,17 +218,17 @@ def getinfo(path, num, param):
     #输出图片
     if num <= 13 and num > 0:
         for i in range(num):
-            getobjname(int(i), 0, startpoint[1])
+            getobjname(int(i), 25, startpoint[1])
             getimg(int(i), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
     elif num > 13:
         for i in range(13):
-            getobjname(int(i), 0, startpoint[1])
+            getobjname(int(i), 25, startpoint[1])
             getimg(int(i), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
         startpoint = [700, 135]
         for i in range(num-13):
-            getobjname(int(i+13), 510, startpoint[1])
+            getobjname(int(i+13), 535, startpoint[1])
             getimg(int(i+13), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
             
