@@ -3,7 +3,7 @@
   originPicture： "bbca5d6a-2156-41c4-89da-0329e8c99a4f", 
   date: 2016-09-21,
   profile: {
-    sex: "Man",
+    gender: "Man",
     age: 30
   },
   bloodtest: {[
