@@ -125,8 +125,6 @@ def getinfo(path, num, param):
 
     def findhead(i, j, k):
         dis = []
-        line = []
-        max_dis = 0
         dis.append([distance_line(i, j), i, j])
         dis.append([distance_line(j, k), j, k])
         dis.append([distance_line(k, i), k, i])
@@ -142,11 +140,12 @@ def getinfo(path, num, param):
     # 由三条线来确定表头的位置和表尾的位置
     line_upper, line_lower = findhead(line[2],line[1],line[0])
 
+
     # 由表头和表尾确定目标区域的位置
-    total_width = line_upper[1]-line_upper[0]
-    total_hight = line_lower[0]-line_upper[0]
 
     # 利用叉乘的不可交换性确定起始点
+    total_width = line_upper[1]-line_upper[0]
+    total_hight = line_lower[0]-line_upper[0]
     cross_prod = cross(total_width, total_hight)
     if cross_prod <0:
         temp = line_upper[1]
@@ -169,7 +168,7 @@ def getinfo(path, num, param):
                     [line_lower[0][0], line_lower[0][1]], [line_lower[1][0], line_lower[1][1]]],np.float32)
     standard = np.array([[0,0], [1000, 0], [0, 760], [1000, 760]],np.float32)
 
-    #使用透视变换将表格区域转换为一个1000*600的图
+    #使用透视变换将表格区域转换为一个1000*760的图
     PerspectiveMatrix = cv2.getPerspectiveTransform(points,standard)
     PerspectiveImg = cv2.warpPerspective(img, PerspectiveMatrix, (1000, 760))
 
@@ -186,7 +185,7 @@ def getinfo(path, num, param):
     #     os.makedirs(output_path)
 
     #输出透视变换后的图片
-    cv2.imwrite(output_path + 'source.jpg', PerspectiveImg)
+    cv2.imwrite(output_path + 'region.jpg', PerspectiveImg)
 
     #输出年龄
     img_age = PerspectiveImg[15 : 70, 585 : 690]
@@ -206,11 +205,11 @@ def getinfo(path, num, param):
     lateral_lenth = 80
 
     def getobjname(i, x, y):
-        region_roi = PerspectiveImg[y : y+vertical_lenth, x : x+175]
+        region_roi = PerspectiveImg[y : y+vertical_lenth, x : x+170]
         filename = output_path + 'p' + str(i) + '.jpg'
         cv2.imwrite(filename, region_roi)
 
-    def getimg(i, x, y):
+    def getobjdata(i, x, y):
         region_roi = PerspectiveImg[y : y+vertical_lenth, x : x+lateral_lenth]
         filename = output_path + 'data' + str(i) + '.jpg'
         cv2.imwrite(filename, region_roi)
@@ -219,17 +218,17 @@ def getinfo(path, num, param):
     if num <= 13 and num > 0:
         for i in range(num):
             getobjname(int(i), 25, startpoint[1])
-            getimg(int(i), startpoint[0], startpoint[1])
+            getobjdata(int(i), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
     elif num > 13:
         for i in range(13):
             getobjname(int(i), 25, startpoint[1])
-            getimg(int(i), startpoint[0], startpoint[1])
+            getobjdata(int(i), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
         startpoint = [700, 135]
         for i in range(num-13):
             getobjname(int(i+13), 535, startpoint[1])
-            getimg(int(i+13), startpoint[0], startpoint[1])
+            getobjdata(int(i+13), startpoint[0], startpoint[1])
             startpoint[1] = startpoint[1] + 40
             
 
