@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-import ImageEnhance
+from PIL import ImageEnhance
 import cv2.cv
 from PIL import Image, ImageDraw
 import os
