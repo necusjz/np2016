@@ -29,17 +29,16 @@ sudo pip install pymongo
 ```
 cd  BloodTestReportOCR
 python view.py # upload图像,在浏览器打开http://yourip:8080
-python getinfo_sample.py # 自动剪切
-python ocr.py # 识别
+python test.py # 自动剪切 & 识别
 ```
 
-## getinfo.py
+## autocut.py
 
-getinfo.py把上述算法打包成了函数。
+autocut.py把上述算法打包成了函数。
 
 函数原型为
 ```
-getinfo(path, times, param)
+autocut(path, times, param)
 ```
 path是bloodtestreport2.jpg的路径，times则是读取数据的数量。
 param是一些算法的参数，不设置的话填入getinfo.defalut即可。
@@ -66,9 +65,6 @@ p1是高斯模糊的参数，p2和p3是canny边缘检测的高低阈值，p4和p
  - 图片中应该包含全部的三条黑线
  - 图片尽量不要包含化验单的边缘，如果有的话，请尽量避开有阴影的边缘。
 
-#### getinfo_sample.py
-
-这是一个调用getinfo.py的范例
 
 ## ocr.py
 
