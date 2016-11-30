@@ -34,10 +34,10 @@ for i in range(22):
 	digtitstr = digtitstr.strip(".")
 	print digtitstr
 	digtitsresult.append(digtitstr)
-with open('digitdata.csv', 'wb') as csvfile:
+with open('data.csv', 'wb') as csvfile:
 	spamwriter = csv.writer(csvfile,dialect='excel')
 	spamwriter.writerow(digtitsresult)
-
+'''
 #识别中文
 for x in range(22):
 	image = read('temp_pics/p'+str(x)+'.jpg')
@@ -52,3 +52,4 @@ with open('chidata.csv', 'wb') as csvfile:
 	csvfile.write(codecs.BOM_UTF8)
 	spamwriter = csv.writer(csvfile,dialect='excel')
 	spamwriter.writerow(chiresult)
+'''

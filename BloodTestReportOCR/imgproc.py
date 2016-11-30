@@ -34,7 +34,7 @@ def  digitsimg(src):
 #    cv2.imshow('median',result)
  #   cv2.waitKey(0)
     return result
-
+'''
 def chineseimg(src):
 
     
@@ -54,7 +54,7 @@ def chineseimg(src):
   #  cv2.imshow('直方图',result)
  #   cv2.waitKey(0)
     return result
-'''
+
     #将结果放大便于识别
     result = cv2.resize(result,(256,128),interpolation=cv2.INTER_CUBIC)
 
