@@ -34,7 +34,7 @@ python test.py # 自动剪切 & 识别
 
 ## ocr.py
 
-输入一张报告图片的路径，输出为json格式的报告单数据
+输入一张报告图片，输出为json格式的报告单数据
 
 #### classifier.py
 
