@@ -31,6 +31,10 @@ cd  BloodTestReportOCR
 python view.py # upload图像,在浏览器打开http://yourip:8080
 python test.py # 自动剪切 & 识别
 ```
+## classifier.py
+
+用于判定裁剪矫正后的报告和裁剪出检测项目的编号
+
 
 ## autocut.py
 
