@@ -31,12 +31,17 @@ cd  BloodTestReportOCR
 python view.py # upload图像,在浏览器打开http://yourip:8080
 python test.py # 自动剪切 & 识别
 ```
-## classifier.py
+
+## ocr.py
+
+输入一张报告图片的路径，输出为json格式的报告单数据
+
+#### classifier.py
 
 用于判定裁剪矫正后的报告和裁剪出检测项目的编号
 
 
-## autocut.py
+#### autocut.py
 
 autocut.py把上述算法打包成了函数。
 
@@ -51,7 +56,7 @@ param是一些算法的参数，不设置的话填入getinfo.defalut即可。
 
 函数输出为data0.jpg,data1.jpg......等一系列图片，分别是白细胞计数，中性粒细胞记数等的数值的图片。
 
-#### 关于param
+* 关于param
 
 参数的形式为[p1, p2, p3 ,p4 ,p5]。
 p1,p2,p3,p4,p5都是整型，其中p1必须是奇数。
@@ -70,10 +75,7 @@ p1是高斯模糊的参数，p2和p3是canny边缘检测的高低阈值，p4和p
  - 图片尽量不要包含化验单的边缘，如果有的话，请尽量避开有阴影的边缘。
 
 
-## ocr.py
 
-识别temp_pics文件夹下的数字图片和中文图片，将结果分别存入digitdata.csv和chidata.csv
-（识别中文时候前边的数字干扰很大，不知道可不可以不用数字）
 
 #### imgproc.py 
 将识别的图像进行处理二值化等操作，提高识别率
