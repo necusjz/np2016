@@ -12,15 +12,17 @@ import imgproc
 import cv2
 import autocut
 import classifier
+import json
 
 digtitsresult = []
 chiresult = []
+num = 22
 
-
-def ocr(path, num):
+# input a image,output a json
+def ocr(path ):
     ret = autocut.autocut(path, num, autocut.default)
     if ret != 0:
-        return -1
+        return null
 
     # 识别
     def image_to_string(image, flag=True):
@@ -34,9 +36,12 @@ def ocr(path, num):
     def read(url):
         image = cv2.imread(url)
         return image
+    # load json example
+    with open('bloodtestdata.json') as json_file:
+        data = json.load(json_file)
 
-    # 识别数字
-    for i in range(22):
+    # 识别检测项目编号及数字
+    for i in range(num):
         item = read('temp_pics/p' + str(i) + '.jpg')
         item_num = classifier.getItemNum(item)
         image = read('temp_pics/data' + str(i) + '.jpg')
@@ -45,34 +50,15 @@ def ocr(path, num):
         digtitstr = digtitstr.replace(" ", '')
         digtitstr = digtitstr.replace("-", '')
         digtitstr = digtitstr.strip(".")
-        print item_num, digtitstr
-        digtitsresult.append(item_num)
-        digtitsresult.append(digtitstr)
-    with open('data.csv', 'wb') as csvfile:
-        spamwriter = csv.writer(csvfile, dialect='excel')
-        spamwriter.writerow(digtitsresult)
-    '''
-    #识别中文
-    for x in range(22):
-        image = read('temp_pics/p'+str(x)+'.jpg')
-        image = imgproc.chineseimg(image)
-        chistr = ocr(image,False)
-        chistr = chistr.replace(" ",'')
-        chistr = chistr.replace(".",'')
-        print chistr.decode('utf-8')
+        data['bloodtest'][item_num]['value'] = digtitstr
+    json_data = json.dumps(data,ensure_ascii=False,indent=4)
+    return json_data
 
-        chiresult.append(chistr)
-    with open('chidata.csv', 'wb') as csvfile:
-        csvfile.write(codecs.BOM_UTF8)
-        spamwriter = csv.writer(csvfile,dialect='excel')
-        spamwriter.writerow(chiresult)
-    '''
-    return 0
 # unit test
 if __name__ == '__main__':
     import ocr
 
     path = 'origin_pics/bloodtestreport2.jpg'
-    num = 22
 
-    ocr.ocr(path, num)
+    json_data = ocr.ocr(path)
+    print json_data
