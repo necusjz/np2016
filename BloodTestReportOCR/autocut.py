@@ -2,7 +2,8 @@
 
 import cv2
 import numpy as np
-import os 
+import os
+import classifier
 
 default = [3, 70, 30, 0.25, 0.0001]
 
@@ -186,6 +187,9 @@ def autocut(path, num, param):
 
     #输出透视变换后的图片
     cv2.imwrite(output_path + 'region.jpg', PerspectiveImg)
+    if not(classifier.isReport(PerspectiveImg)):
+        print "it is not a is Report!"
+        return -1
 
     #输出年龄
     img_age = PerspectiveImg[15 : 70, 585 : 690]
@@ -234,3 +238,12 @@ def autocut(path, num, param):
 
     #正常结束返回0
     return 0
+
+# unit test
+if __name__ == '__main__':
+    import autocut
+
+    path = 'origin_pics/bloodtestreport2.jpg'
+    num = 22
+
+    autocut.autocut(path, num, autocut.default)

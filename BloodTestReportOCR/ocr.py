@@ -11,13 +11,16 @@ import pytesseract
 import imgproc
 import cv2
 import autocut
+import classifier
 
 digtitsresult = []
 chiresult = []
 
 
 def ocr(path, num):
-    autocut.autocut(path, num, autocut.default)
+    ret = autocut.autocut(path, num, autocut.default)
+    if ret != 0:
+        return -1
 
     # 识别
     def image_to_string(image, flag=True):
@@ -33,15 +36,17 @@ def ocr(path, num):
         return image
 
     # 识别数字
-
     for i in range(22):
+        item = read('temp_pics/p' + str(i) + '.jpg')
+        item_num = classifier.getItemNum(item)
         image = read('temp_pics/data' + str(i) + '.jpg')
         image = imgproc.digitsimg(image)
         digtitstr = image_to_string(image)
         digtitstr = digtitstr.replace(" ", '')
         digtitstr = digtitstr.replace("-", '')
         digtitstr = digtitstr.strip(".")
-        print digtitstr
+        print item_num, digtitstr
+        digtitsresult.append(item_num)
         digtitsresult.append(digtitstr)
     with open('data.csv', 'wb') as csvfile:
         spamwriter = csv.writer(csvfile, dialect='excel')
@@ -62,3 +67,12 @@ def ocr(path, num):
         spamwriter = csv.writer(csvfile,dialect='excel')
         spamwriter.writerow(chiresult)
     '''
+    return 0
+# unit test
+if __name__ == '__main__':
+    import ocr
+
+    path = 'origin_pics/bloodtestreport2.jpg'
+    num = 22
+
+    ocr.ocr(path, num)
