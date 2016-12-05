@@ -9,7 +9,6 @@ from pymongo import MongoClient
 import bson
 from cStringIO import StringIO
 from PIL import Image
-import ocr
 from imageFilter import ImageFilter
 import cv2
 import numpy
@@ -47,11 +46,11 @@ def upload():
 	if request.method == 'POST':
 		if 'imagefile' not in request.files:
 			flash('No file part')
-			return render_template("error.html", errormessage="No file part")
+			return jsonify({"error": "No file part"})
 		imgfile = request.files['imagefile']
 		if imgfile.filename == '':
 			flash('No selected file')
-			return render_template("error.html", errormessage="No selected file")
+			return jsonify({"error": "No selected file"})
 		if imgfile:
 			#pil = StringIO(imgfile)
 			#pil = Image.open(pil)
@@ -70,7 +69,8 @@ def upload():
 			}
 			return jsonify(data)
 			#return render_template("result.html", filename=filename, fileid=fid)
-	return render_template("error.html", errormessage="No POST methods")
+	#return render_template("error.html", errormessage="No POST methods")
+	return jsonify({"error": "No POST methods"})
 
 '''
 	根据图像oid，在mongodb中查询，并返回Binary对象
