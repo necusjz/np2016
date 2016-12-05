@@ -3,7 +3,7 @@
 
 
 import os
-from flask import Flask, request, Response, render_template, jsonify
+from flask import Flask, request, Response, render_template, jsonify, redirect
 from werkzeug.utils import secure_filename
 from pymongo import MongoClient
 import bson
@@ -40,7 +40,7 @@ def save_file(f):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-	return render_template("upload.html")
+	return redirect('/index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload():
