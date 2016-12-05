@@ -86,5 +86,40 @@ p1是高斯模糊的参数，p2和p3是canny边缘检测的高低阈值，p4和p
 
 ## view.py 
 
-Web 端上传图片到服务器，存入mongodb并获取oid
+Web 端上传图片到服务器，存入mongodb并获取oid，稍作修整，希望能往REST架构设计，目前还不完善；
+前端采用了vue.js, mvvm模式。写了两个版本，一个是index.html无插件，另一个使用了bootstrap-fileinput插件，有点问题；
+```
+python view.py
+访问localhost:8080/index.html
+```
 
+## imageFilter.py
+对图像透视裁剪和OCR进行了简单的封装，以便于模块间的交互，规定适当的接口
+```python
+'''
+        perspect函数用于透视image，他会缓存一个透视后的opencv numpy矩阵，并返回该矩阵
+        透视失败，则会返回None，并打印不是报告
+        @param 透视参数
+'''
+
+'''
+        filter函数返回img经过透视过后的PIL格式的Image对象，如果缓存中有PerspectivImg则直接使用，没有先进行透视
+        过滤失败则返回None
+        @param filter参数
+'''
+
+'''
+        autocut函数用于剪切ImageFilter中的img成员，剪切之后临时图片保存在out_path，
+        如果剪切失败，返回-1，成功返回0
+        @num 剪切项目数
+        @param 剪切参数
+'''
+
+'''
+        ocr函数用于对img进行ocr识别，他会先进行剪切，之后进一步做ocr识别，返回一个json对象
+        如果剪切失败，则返回None
+        @num 规定剪切项目数
+
+'''
+
+```
