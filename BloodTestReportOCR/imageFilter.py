@@ -16,18 +16,17 @@ from PIL import Image
 
 default = [3, 70, 30, 0.25, 0.0001]
 
-
-class ImageFilter(object):
+class ImageFilter:
     
     '''
         ImageFilter初始化，可以传入一个opencv格式打开的图片，也可以传入一个图片的路径，二选一
     '''
-    def __init__(self, image=None, imagepath='origin_pics/bloodtestreport2.jpg'):
+    def __init__(self, image, imagepath='origin_pics/bloodtestreport2.jpg'):
         self.img = image
-        if image is None:
+        if image == None:
+            print 'img init from',imagepath
             self.img = cv2.imread(imagepath)
-            print 'img init'
-        
+
         self.PerspectiveImg = None
          #设置输出路径，创建目录
         self.output_path = 'temp_pics/'
@@ -174,7 +173,6 @@ class ImageFilter(object):
         # 由三条线来确定表头的位置和表尾的位置
         line_upper, line_lower = findhead(line[2],line[1],line[0])
 
-
         # 由表头和表尾确定目标区域的位置
 
         # 利用叉乘的不可交换性确定起始点
@@ -206,14 +204,8 @@ class ImageFilter(object):
         PerspectiveMatrix = cv2.getPerspectiveTransform(points,standard)
         self.PerspectiveImg = cv2.warpPerspective(self.img, PerspectiveMatrix, (1000, 760))
 
-       
-
         #输出透视变换后的图片
         cv2.imwrite(self.output_path + 'region.jpg', self.PerspectiveImg)
-        print type(self.PerspectiveImg)
-        if not(classifier.isReport(self.PerspectiveImg)):
-            print "it is not a is Report!"
-            return None
         return self.PerspectiveImg
         
     '''
@@ -239,7 +231,7 @@ class ImageFilter(object):
     '''
     def autocut(self, num, param=default):
         if self.PerspectiveImg is None:
-            self.PerspectivImg = self.perspect(param)
+            self.PerspectivImg = self.filter(param)
         # 仍然是空，说明不是报告
         if self.PerspectiveImg is None:
             return -1
@@ -337,10 +329,8 @@ class ImageFilter(object):
 
 # unit test
 if __name__ == '__main__':
-    imageFilter = ImageFilter()
+    imageFilter = ImageFilter() # 可以传入一个opencv格式打开的图片
     
     num = 22
-    imageFilter.autocut(num)
-    img = imageFilter.filter()
-    print img.size
     print imageFilter.ocr(num)
+
