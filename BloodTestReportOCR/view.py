@@ -90,6 +90,7 @@ def find_file(fid):
 '''
 @app.route('/report/<fid>')
 def get_report(fid):
+
 	try:
 		file = db.files.find_one(bson.objectid.ObjectId(fid))
 		if file is None:
@@ -97,8 +98,11 @@ def get_report(fid):
 		print(type(file['content']))
 		
 		img = cv2.imdecode(numpy.fromstring(dumps(file['content']), numpy.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
+		if img is None:
+			print "img is None"
+			return jsonify({"error": "can't ocr'"})
 		report_data = ImageFilter(image=img).ocr(22)
-		print report_data
+		#print report_data
 		if report_data is None:
 			return jsonify({"error": "can't ocr'"})
 		return jsonify(report_data)
