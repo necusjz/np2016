@@ -174,7 +174,6 @@ class ImageFilter:
         # 由三条线来确定表头的位置和表尾的位置
         line_upper, line_lower = findhead(line[2],line[1],line[0])
 
-<<<<<<< HEAD
 	def detectmiss(line, j, ref_angle):
 	    vector = []
 	    lenth = len(line)
@@ -202,8 +201,6 @@ class ImageFilter:
 	    print "it is not a complete Report!"
 	    return none
 
-=======
->>>>>>> mengning/master
         # 由表头和表尾确定目标区域的位置
 
         # 利用叉乘的不可交换性确定起始点
