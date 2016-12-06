@@ -113,6 +113,7 @@ def get_report(fid):
 		report_data = ImageFilter(image=img).ocr(22)
 		#print report_data
 		if report_data is None:
+			print "report_data is None"
 			return jsonify({"error": "can't ocr'"})
 		return jsonify(report_data)
 	except bson.errors.InvalidId:

@@ -14,7 +14,7 @@ import pytesseract
 import imgproc
 from PIL import Image
 
-default = [3, 70, 30, 0.25, 0.0001]
+default = [3, 70, 30, 0.7, 0.0001]
 
 class ImageFilter:
     
@@ -146,7 +146,7 @@ class ImageFilter:
 
         #检测出的线数量不对就返回-1跳出
         if len(line) != 3:
-            print "it is not a is Report!"
+            print "it is not a is Report!,len(line) =",len(line)
             return None
         
         def distance_line(i, j):
@@ -215,12 +215,11 @@ class ImageFilter:
     '''
     def filter(self, param=default):
         if self.PerspectiveImg is None:
-
             self.PerspectivImg = self.perspect(param)
-
-
+            if self.PerspectiveImg is None:
+                return None
         if not(classifier.isReport(self.PerspectiveImg)):
-            print "it is not a is Report!"
+            print "it is not a is Report!",classifier.isReport(self.PerspectiveImg)
             return None
         try:
             Image.fromarray(self.PerspectivImg)
