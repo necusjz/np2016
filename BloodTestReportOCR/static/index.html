@@ -140,8 +140,15 @@
             processData: false,
             contentType: false
         }).done(function(data) {
-            console.log(data.templates);
-            $("#filtered-image").empty().append(data.templates);
+            //console.log(data.templates);
+
+            if(data.error == 1)
+            {
+                alert("图片不合格！");
+            }else
+            {
+                $("#filtered-image").empty().append(data.templates);
+            }
         });
 
     });

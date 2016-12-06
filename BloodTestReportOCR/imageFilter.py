@@ -215,12 +215,17 @@ class ImageFilter:
     '''
     def filter(self, param=default):
         if self.PerspectiveImg is None:
+
             self.PerspectivImg = self.perspect(param)
-       
+
+
         if not(classifier.isReport(self.PerspectiveImg)):
             print "it is not a is Report!"
             return None
-
+        try:
+            Image.fromarray(self.PerspectivImg)
+        except Exception:
+            return None
         return Image.fromarray(self.PerspectivImg)
 
     '''
