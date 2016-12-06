@@ -29,32 +29,34 @@ sudo pip install pymongo
 ```
 cd  BloodTestReportOCR
 python view.py # upload图像,在浏览器打开http://yourip:8080
-python test.py # 自动剪切 & 识别
+
 ```
 
-## ocr.py
+## view.py 
 
-输入一张报告图片，输出为json格式的报告单数据
+Web 端上传图片到服务器，存入mongodb并获取oid，稍作修整，希望能往REST架构设计，目前还不完善；
+前端采用了vue.js, mvvm模式。写了两个版本，一个是index.html无插件，另一个使用了bootstrap-fileinput插件，有点问题；
 
-#### classifier.py
-
-用于判定裁剪矫正后的报告和裁剪出检测项目的编号
-
-
-#### autocut.py
-
-autocut.py把上述算法打包成了函数。
-
-函数原型为
+## imageFilter.py
+对图像透视裁剪和OCR进行了简单的封装，以便于模块间的交互，规定适当的接口
+```    
+    imageFilter = ImageFilter() # 可以传入一个opencv格式打开的图片
+   
+    num = 22
+    print imageFilter.ocr(num)
 ```
-autocut(path, times, param)
-```
-path是bloodtestreport2.jpg的路径，times则是读取数据的数量。
-param是一些算法的参数，不设置的话填入getinfo.defalut即可。
 
-原图在BloodTestReportOCR/origin_pics/ 文件夹下，剪切出来的图片在BloodTestReportOCR/temp_pics/ 文件夹下
+#### ocr函数 - 模块主函数返回识别数据
 
-函数输出为data0.jpg,data1.jpg......等一系列图片，分别是白细胞计数，中性粒细胞记数等的数值的图片。
+用于对img进行ocr识别，他会先进行剪切，之后进一步做ocr识别，返回一个json对象
+如果剪切失败，则返回None
+@num 规定剪切项目数
+
+#### perspect函数做 - 初步的矫正图片
+
+用于透视image，他会缓存一个透视后的opencv numpy矩阵，并返回该矩阵
+透视失败，则会返回None，并打印不是报告
+@param 透视参数
 
 * 关于param
 
@@ -74,8 +76,27 @@ p1是高斯模糊的参数，p2和p3是canny边缘检测的高低阈值，p4和p
  - 图片中应该包含全部的三条黑线
  - 图片尽量不要包含化验单的边缘，如果有的话，请尽量避开有阴影的边缘。
 
+#### filter函数 - 过滤掉不合格的或非报告图片
+
+返回img经过透视过后的PIL格式的Image对象，如果缓存中有PerspectivImg则直接使用，没有先进行透视
+过滤失败则返回None
+@param filter参数
 
 
+#### autocut函数 - 将图片中性别、年龄、日期和各项目名称数据分别剪切出来
+
+用于剪切ImageFilter中的img成员，剪切之后临时图片保存在out_path，
+如果剪切失败，返回-1，成功返回0
+ @num 剪切项目数
+ @param 剪切参数
+ 
+剪切出来的图片在BloodTestReportOCR/temp_pics/ 文件夹下
+
+函数输出为data0.jpg,data1.jpg......等一系列图片，分别是白细胞计数，中性粒细胞记数等的数值的图片。
+
+#### classifier.py
+
+用于判定裁剪矫正后的报告和裁剪出检测项目的编号
 
 #### imgproc.py 
 将识别的图像进行处理二值化等操作，提高识别率
@@ -83,8 +104,3 @@ p1是高斯模糊的参数，p2和p3是canny边缘检测的高低阈值，p4和p
 
 #### digits
 将该文件替换Tesseract-OCR\tessdata\configs中的digits
-
-## view.py 
-
-Web 端上传图片到服务器，存入mongodb并获取oid
-

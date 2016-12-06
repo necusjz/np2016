@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BloodTestOCR</title>
+    <!-- Jquey load frist-->
+    <script src="http://cdn.bootcss.com/jquery/3.1.1/jquery.min.js" type="text/javascript"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <!-- bootstrap.js below is needed if you wish to zoom and view file content 
+     in a larger detailed modal dialog -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="navbar navbar-default">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">BloodTestOCR Demo</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="checkbox">
+        </div>
+        <form id="data" class="form-signin" role="form" method="post" action="upload" enctype="multipart/form-data">
+            <h2 class="form-signin-heading">请选择血常规检验报告图片上传</h2>
+            <div class="checkbox">
+            </div>
+            <input type="file" name="imagefile" class="form-control" placeholder="file path" required autofocus>
+            <div class="checkbox">
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">提交</button>
+        </form>
+    </div>
+    <div id="filtered-image" class="container">
+        
+    </div>
+    <!-- /container -->
+    <!-- /container -->
+    <div class="container">
+        <hr class="soften" />
+    </div>
+    <div id="report" class="container">
+        <button type="button" v-on:click="showReport()" class="btn btn-primary btn-lg btn-block">生成报告</button>
+        <div id="report-table" style="display:none;">
+            <table class="table table-inverse table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>项目名称</th>
+                        <th>英文缩写</th>
+                        <th>检测结果</th>
+                        <th>参考范围</th>
+                        <th>单位</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in report_items">
+                        <th scope="row">*</th>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.alias }}</td>
+                        <td>
+                            <input type="text" v-model="item.value" class="form-control" placeholder="检测值" />
+                        </td>
+                        <td>{{ item.range }}</td>
+                        <td>{{ item.unit }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+    var report = new Vue({
+        el: '#report',
+        data: {
+            report_items: new Array()
+        },
+        methods: {
+            showReport: function(event) {
+
+                url = $("#filtered-report").attr("src");
+                if (url == null) {
+                    alert("请上传报告");
+                    return;
+                }
+
+                url = 'report/' + url.split('/')[2];
+                console.log(url);
+                /*
+                $.get(url,function(data) {
+                    console.log(data);
+                    console.log(data['bloodtest']);
+                    for (var i = 0; i < data['bloodtest'].length; i++) {
+                        this.report_items.push({
+                            name: data.bloodtest[i].name,
+                            alias: data.bloodtest[i].alias,
+                            value: data.bloodtest[i].value,
+                            range: data.bloodtest[i].range,
+                            unit: data.boodtest[i].unit
+                        }); 
+                    }
+                });
+                */
+                $.ajax({
+                    url: url,
+                    success: function(data) {
+                        // data是string，必须转化为json对象
+                        var data = JSON.parse(data);
+                        console.log("response" + data);
+                        console.log(data.date);
+                        console.log(data.bloodtest);
+                        for (var i = 0; i < data["bloodtest"].length; i++) {
+                            report.report_items.push({
+                                name: data.bloodtest[i].name,
+                                alias: data.bloodtest[i].alias,
+                                value: data.bloodtest[i].value,
+                                range: data.bloodtest[i].range,
+                                unit: data.bloodtest[i].unit
+                            });
+                        }
+                    }
+                });
+
+                $("#report-table").show();
+            }
+        }
+    });
+
+    $(document).on('submit', "form#data", function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: new FormData(this),
+            processData: false,
+            contentType: false
+        }).done(function(data) {
+            console.log(data.templates);
+            $("#filtered-image").empty().append(data.templates);
+        });
+
+    });
+    </script>
+</body>
+
+</html>
