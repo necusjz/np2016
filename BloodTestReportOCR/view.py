@@ -55,7 +55,11 @@ def upload():
 			#pil = StringIO(imgfile)
 			#pil = Image.open(pil)
 			img = cv2.imdecode(numpy.fromstring(imgfile.read(), numpy.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
-			ImageFilter(image=img).filter()
+			isqualified = ImageFilter(image=img).filter()
+			if isqualified == None:
+				error = 1
+			else:
+				error = 0
 			with open('temp_pics/region.jpg') as f:
 				fid, filename= save_file(f)
 			print(fid)
@@ -63,10 +67,15 @@ def upload():
 			#if report_data == None:
 			#	return jsonify({"error": "it is not a report"})
 			#print report_data
-			templates = "<div><img id=\'filtered-report\' src=\'/file/%s\' class=\'file-preview-image\' width=\'100%%\' height=\'512\'></div>"%(fid)
-			data = {
-				"templates": templates
-			}
+			if 0 == error:
+				templates = "<div><img id=\'filtered-report\' src=\'/file/%s\' class=\'file-preview-image\' width=\'100%%\' height=\'512\'></div>"%(fid)
+				data = {
+					"templates": templates,
+				}
+			else:
+				data = {
+					"error": error,
+				}
 			return jsonify(data)
 			#return render_template("result.html", filename=filename, fileid=fid)
 	#return render_template("error.html", errormessage="No POST methods")
