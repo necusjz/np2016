@@ -97,7 +97,7 @@ def get_report(fid):
 			raise bson.errors.InvalidId()
 		print(type(file['content']))
 		
-		img = cv2.imdecode(numpy.fromstring(dumps(file['content']), numpy.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
+		img = cv2.imdecode(numpy.fromstring(bson.json_util.loads(dumps(file['content'])), numpy.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
 		if img is None:
 			print "img is None"
 			return jsonify({"error": "can't ocr'"})
