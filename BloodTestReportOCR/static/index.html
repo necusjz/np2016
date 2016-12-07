@@ -109,18 +109,21 @@
                 $.ajax({
                     url: url,
                     success: function(data) {
-                        // data是string，必须转化为json对象
-                        var data = JSON.parse(data);
-                        console.log("response" + data);
-                        console.log(data.date);
-                        console.log(data.bloodtest);
-                        for (var i = 0; i < data["bloodtest"].length; i++) {
+			console.log("response before JSON.parse:\n" + data);
+                        // data是string，必须转化为json对象,第一次parse将不标准的string转换为JSON标准格式的string，第二次parse将标准格式的string转换为JSON对象
+                        var json_str = JSON.parse(data);
+			var json_data = JSON.parse(json_str);
+			console.log("response of json_str:\n" + json_str);
+                        console.log("response of json_data:\n" + json_data);
+                        console.log("data.date\n"+json_data["date"]);
+                        console.log(json_data.bloodtest);
+                        for (var i = 0; i < json_data["bloodtest"].length; i++) {
                             report.report_items.push({
-                                name: data.bloodtest[i].name,
-                                alias: data.bloodtest[i].alias,
-                                value: data.bloodtest[i].value,
-                                range: data.bloodtest[i].range,
-                                unit: data.bloodtest[i].unit
+                                name: json_data.bloodtest[i]["name"],
+                                alias: json_data.bloodtest[i].alias,
+                                value: json_data.bloodtest[i].value,
+                                range: json_data.bloodtest[i].range,
+                                unit: json_data.bloodtest[i].unit
                             });
                         }
                     }

@@ -168,6 +168,7 @@
                 $.ajax({
                     url: url,
                     success: function( data ) {
+			
                         // data是string，必须转化为json对象
                         var data = JSON.parse(data);
                         console.log("response" + data);

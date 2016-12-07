@@ -23,7 +23,7 @@ class ImageFilter:
     '''
     def __init__(self, image, imagepath='origin_pics/bloodtestreport2.jpg'):
         self.img = image
-        if image == None:
+        if image is None:
             print 'img init from',imagepath
             self.img = cv2.imread(imagepath)
 
@@ -146,7 +146,12 @@ class ImageFilter:
 
         #检测出的线数量不对就返回-1跳出
         if len(line) != 3:
+
             print "it is not a is Report!,len(line) =",len(line)
+
+            print "It is not a is Report!\n"
+	    print '\nline number:', len(line)
+
             return None
         
         def distance_line(i, j):
