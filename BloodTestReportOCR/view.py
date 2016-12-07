@@ -23,7 +23,7 @@ app.config.from_object('config')
 # 连接数据库，并获取数据库对象
 db = MongoClient(app.config['DB_HOST'], app.config['DB_PORT']).test
 
-def save_file(f, report_data):
+def save_file(f):
 
 	content = StringIO(f.read())
 	try:
@@ -32,7 +32,7 @@ def save_file(f, report_data):
 			raise IOError()
 	except IOError:
 		flask.abort(400)
-	c = dict(report_data=report_data,content=bson.binary.Binary(content.getvalue()),filename=secure_filename(f.name), mime=mime)
+	c = dict(content=bson.binary.Binary(content.getvalue()),filename=secure_filename(f.name), mime=mime)
 	db.files.save(c)
 	return c['_id'], c['filename']
 
@@ -54,28 +54,15 @@ def upload():
 		if imgfile:
 			#pil = StringIO(imgfile)
 			#pil = Image.open(pil)
-			#print 'imgfile:', imgfile
 			img = cv2.imdecode(numpy.fromstring(imgfile.read(), numpy.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
-
 			isqualified = ImageFilter(image=img).filter()
 			if isqualified == None:
 				error = 1
 			else:
 				error = 0
-
-			ImageFilter(img).filter()
-			'''
-			由于透视算法在第二次透视时会出现问题，所以暂时使用第一次透视结果进行图片分割与识别
-			同时将识别所得的JSON数据存入mongoDB，这样前台点击生成报告时将直接从数据库中取出JSON数据，而不再进行图像透视
-			'''
-			report_data = ImageFilter(image=img).ocr(22)
-		
-
 			with open('temp_pics/region.jpg') as f:
-				#img_region= cv2.imdecode(numpy.fromstring(f.read(), numpy.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
-				#report_data = ImageFilter(image=img_region).ocr(22)
-				fid, filename = save_file(f,report_data)
-			print 'fid:', fid
+				fid, filename= save_file(f)
+			print(fid)
 			#report_data = ocr.ocr(path)
 			#if report_data == None:
 			#	return jsonify({"error": "it is not a report"})
@@ -112,12 +99,11 @@ def find_file(fid):
 '''
 @app.route('/report/<fid>')
 def get_report(fid):
-	#print 'get_report(fid):', fid
+
 	try:
 		file = db.files.find_one(bson.objectid.ObjectId(fid))
 		if file is None:
 			raise bson.errors.InvalidId()
-
 		print(type(file['content']))
 		
 		img = cv2.imdecode(numpy.fromstring(bson.json_util.loads(dumps(file['content'])), numpy.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
@@ -128,23 +114,6 @@ def get_report(fid):
 		#print report_data
 		if report_data is None:
 			print "report_data is None"
-
-		'''
-			直接从数据库中取出之前识别好的JSON数据，并且用bson.json_util.dumps将其从BSON转换为JSON格式的str类型
-		'''
-		print 'type before transform:\n', type(file['report_data'])
-		report_data = bson.json_util.dumps(file['report_data'])
-		print 'type after transform:\n', type(report_data)
-		#print 'content of report_data:', report_data
-		#img = cv2.imdecode(numpy.fromstring(file['content'], dtype=numpy.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
-		#if img is None:
-		#	print "img is None"
-		#	return jsonify({"error": "can't ocr'"})
-		#report_data = ImageFilter(image=img).ocr(22)
-		#print report_data
-		if report_data is None:
-			print 'report_data is NONE! Error!!!!'
-
 			return jsonify({"error": "can't ocr'"})
 		return jsonify(report_data)
 	except bson.errors.InvalidId:
