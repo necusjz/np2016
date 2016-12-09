@@ -48,7 +48,7 @@
     <div id="report" class="container">
         <button type="button" v-on:click="showReport()" class="btn btn-primary btn-lg btn-block">生成报告</button>
         <div id="report-table" style="display:none;">
-            <table class="table table-inverse table-hover table-bordered">
+            <table class="table table-inverse table-hover table-bordered" id="report_table">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -88,7 +88,7 @@
                     alert("请上传报告");
                     return;
                 }
-
+		$("#report_table tr:not(:first)").html("");
                 url = 'report/' + url.split('/')[2];
                 console.log(url);
                 /*
