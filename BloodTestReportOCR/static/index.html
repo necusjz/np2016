@@ -17,68 +17,94 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="navbar navbar-default">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">BloodTestOCR Demo</a>
-            </div>
+<div class="container">
+    <div class="navbar navbar-default">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">BloodTestOCR Demo</a>
         </div>
     </div>
-    <div class="container">
+</div>
+<div class="container">
+    <div class="checkbox">
+    </div>
+    <form id="data" class="form-signin" role="form" method="post" action="upload" enctype="multipart/form-data">
+        <h2 class="form-signin-heading">请选择血常规检验报告图片上传</h2>
         <div class="checkbox">
         </div>
-        <form id="data" class="form-signin" role="form" method="post" action="upload" enctype="multipart/form-data">
-            <h2 class="form-signin-heading">请选择血常规检验报告图片上传</h2>
-            <div class="checkbox">
-            </div>
-            <input type="file" name="imagefile" class="form-control" placeholder="file path" required autofocus>
-            <div class="checkbox">
-            </div>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">提交</button>
-        </form>
-    </div>
-    <div id="filtered-image" class="container">
-        
-    </div>
-    <!-- /container -->
-    <!-- /container -->
-    <div class="container">
-        <hr class="soften" />
-    </div>
-    <div id="report" class="container">
-        <button type="button" v-on:click="showReport()" class="btn btn-primary btn-lg btn-block">生成报告</button>
-        <div id="report-table" style="display:none;">
+        <input type="file" name="imagefile" class="form-control" placeholder="file path" required autofocus>
+        <div class="checkbox">
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">提交</button>
+    </form>
+</div>
+<div id="filtered-image" class="container">
+
+</div>
+<!-- /container -->
+<!-- /container -->
+<div class="container">
+    <hr class="soften" />
+</div>
+<div id="report" class="container">
+    <button type="button" v-on:click="showReport()" class="btn btn-primary btn-lg btn-block">生成报告</button>
+    <div id="report-table" style="display:none;">
+        <div style="width:50%;float:left;">
             <table class="table table-inverse table-hover table-bordered">
                 <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>项目名称</th>
-                        <th>英文缩写</th>
-                        <th>检测结果</th>
-                        <th>参考范围</th>
-                        <th>单位</th>
-                    </tr>
+                <tr>
+                    <th> </th>
+                    <th>检测项目</th>
+                    <th>结果</th>
+                    <th>参考范围</th>
+                    <th>单位</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item in report_items">
-                        <th scope="row">*</th>
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.alias }}</td>
-                        <td>
-                            <input type="text" v-model="item.value" class="form-control" placeholder="检测值" />
-                        </td>
-                        <td>{{ item.range }}</td>
-                        <td>{{ item.unit }}</td>
-                    </tr>
+                <tr v-for="item in report_items_left">
+                    <td>{{ item.count }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>
+                        <input type="text" v-model="item.value" class="form-control" placeholder="检测值" />
+                    </td>
+                    <td>{{ item.range }}</td>
+                    <td>{{ item.unit }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="width:50%;float:right;">
+            <table class="table table-inverse table-hover table-bordered">
+                <thead>
+                <tr>
+                    <th> </th>
+                    <th>检测项目</th>
+                    <th>结果</th>
+                    <th>参考范围</th>
+                    <th>单位</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="item in report_items_right">
+                    <td>{{ item.count }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>
+                        <input type="text" v-model="item.value" class="form-control" placeholder="检测值" />
+                    </td>
+                    <td>{{ item.range }}</td>
+                    <td>{{ item.unit }}</td>
+                </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    <script>
+</div>
+<script>
     var report = new Vue({
         el: '#report',
         data: {
-            report_items: new Array()
+            report_items_left: new Array(),
+            report_items_right: new Array()
         },
         methods: {
             showReport: function(event) {
@@ -96,13 +122,13 @@
                     console.log(data);
                     console.log(data['bloodtest']);
                     for (var i = 0; i < data['bloodtest'].length; i++) {
-                        this.report_items.push({
+                        this.report_items_left.push({
                             name: data.bloodtest[i].name,
                             alias: data.bloodtest[i].alias,
                             value: data.bloodtest[i].value,
                             range: data.bloodtest[i].range,
                             unit: data.boodtest[i].unit
-                        }); 
+                        });
                     }
                 });
                 */
@@ -118,14 +144,30 @@
                         console.log("data.date\n"+json_data["date"]);
                         console.log(json_data.bloodtest);
                         for (var i = 0; i < json_data["bloodtest"].length; i++) {
-                            report.report_items.push({
+                        if(i<13){
+                            report.report_items_left.push({
+                                count: i+1,
                                 name: json_data.bloodtest[i]["name"],
                                 alias: json_data.bloodtest[i].alias,
                                 value: json_data.bloodtest[i].value,
                                 range: json_data.bloodtest[i].range,
                                 unit: json_data.bloodtest[i].unit
                             });
+                            }
+
+                        else {
+                            report.report_items_right.push({
+                                count: i+1,
+                                name: json_data.bloodtest[i]["name"],
+                                alias: json_data.bloodtest[i].alias,
+                                value: json_data.bloodtest[i].value,
+                                range: json_data.bloodtest[i].range,
+                                unit: json_data.bloodtest[i].unit
+                        });
                         }
+
+                        }
+
                     }
                 });
 
