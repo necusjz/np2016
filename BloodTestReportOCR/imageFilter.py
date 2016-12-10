@@ -174,32 +174,33 @@ class ImageFilter:
         # 由三条线来确定表头的位置和表尾的位置
         line_upper, line_lower = findhead(line[2],line[1],line[0])
 
-        def detectmiss(line, j, ref_angle):
-            vector = []
-            lenth = len(line)
-            for i in range(lenth):
-                if i != j:
-                    vector.append([line[j][0]-line[i][0], line[j][1]-line[i][1]])
-            vect1 = vector[0][0]
-            vect2 = vector[0][1]
-            vect3 = vector[1][0]
-            vect4 = vector[1][1]
-            angle1 = (math.acos(np.dot(vect3, vect1) / ((np.dot(vect1, vect1) ** 0.5) * (np.dot(vect3, vect3)**0.5))))/math.pi*180
-            angle2 = (math.acos(np.dot(vect4, vect2) / ((np.dot(vect2, vect2) ** 0.5) * (np.dot(vect4, vect4)**0.5))))/math.pi*180
-            if angle1 > ref_angle or angle2 > ref_angle:
-                return 1
-            return 0
+	def detectmiss(line, line_lower, ref_angle):
+	    vector = []
+	    j = 0
+	    if linecmp(line[1], line_lower):
+	        j = 1
+	    elif linecmp(line[2], line_lower):
+	        j = 2
 
-        # 通过计算夹角来检测是否有缺失一角的情况
-        ref_angle = 1
-        lower = 0
-        if linecmp(line[1], line_lower):
-            lower = 1
-        elif linecmp(line[2], line_lower):
-            lower = 2
-        if detectmiss(line, lower, ref_angle):
-            print "it is not a complete Report!"
-            return none
+	    lenth = len(line)
+	    for i in range(lenth):
+	        if i != j:
+		    vector.append([line[j][0]-line[i][0], line[j][1]-line[i][1]])
+	    vect1 = vector[0][0]
+	    vect2 = vector[0][1]
+	    vect3 = vector[1][0]
+	    vect4 = vector[1][1]
+	    angle1 = (math.acos(np.dot(vect3, vect1) / ((np.dot(vect1, vect1) ** 0.5) * (np.dot(vect3, vect3)**0.5))))/math.pi*180
+	    angle2 = (math.acos(np.dot(vect4, vect2) / ((np.dot(vect2, vect2) ** 0.5) * (np.dot(vect4, vect4)**0.5))))/math.pi*180
+	    if angle1 > ref_angle or angle2 > ref_angle:
+	        return 1
+	    return 0
+
+	# 通过计算夹角来检测是否有缺失一角的情况
+	ref_angle = 1
+	if detectmiss(line, line_lower, ref_angle):
+	    print "it is not a complete Report!"
+	    return None
 
         # 由表头和表尾确定目标区域的位置
 
