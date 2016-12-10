@@ -63,9 +63,10 @@ def upload():
             img = cv2.imdecode(numpy.fromstring(imgfile.read(), numpy.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
             report_data = ImageFilter(image=img).ocr(22)
             if report_data == None:
-                error = 1
-            else:
-                error = 0
+                data = {
+                    "error": 1,
+                }
+                return jsonify(data)
 
             with open('temp_pics/region.jpg') as f:
                 if f is None:
@@ -84,15 +85,11 @@ def upload():
                     #report_data = ImageFilter(image=img).ocr(22)
                     fid, filename = save_file(file_str, f, report_data)
             print 'fid:', fid
-            if 0 == error:
+            if fid is not None:
                 templates = "<div><img id=\'filtered-report\' src=\'/file/%s\' class=\'file-preview-image\' width=\'100%%\' height=\'512\'></div>" % (
                     fid)
                 data = {
                     "templates": templates,
-                }
-            else:
-                data = {
-                    "error": error,
                 }
             return jsonify(data)
             # return render_template("result.html", filename=filename, fileid=fid)
