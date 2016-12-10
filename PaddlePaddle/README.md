@@ -36,6 +36,7 @@ apt-get install -f
 ## 下载MNIST数据集
 
 下载地址https://pan.baidu.com/s/1kUNBkyz
+
 在当前目录建立data文件夹，将MNIST.rar里的train和test文件夹解压到data文件夹下
 
 注该数据集将原版MNIST二进制文件中的图片提取出来分别放入train和test文件夹，用户可以自行添加图片到train和test文件夹下，但要修改源码中关于图像大小的参数
@@ -71,7 +72,7 @@ python prediction.py # 预测，注意设置其中模型路径model_path
 
 训练模块，使用VGG网络训练，该网络在ILSVRC2014的图像分类项目上获第二名
 
-训练后的模型存放在vgg_model/pass-*文件夹下，*表示第几次训练，每训练一次会生成一个模型文件夹，理论上训练次数越多的模型效果越好
+训练后的模型存放在vgg_model/pass-n文件夹下，n表示第几次训练，每训练一次会生成一个模型文件夹，理论上训练次数越多的模型效果越好
 
 注使用CPU训练速度很慢，平均训练一次需要近半小时，目前PaddlePaddle使用CPU训练出来的模型和GPU训练出来的模型不一样，所以用CPU训练只能用CPU预测，用GPU训练只能用GPU预测，而且用GPU预测要安装GPU版的PaddlePaddle和CUDA，cudnn,并且需要NVIDIA显卡支持，所以这里用的是CPU版的
 
