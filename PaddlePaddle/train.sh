@@ -6,8 +6,8 @@ log=train.log
 
 paddle train \
 --config=$config \
---use_gpu=1 \
---trainer_count=1 \
+--use_gpu=0 \
+--trainer_count=8 \
 --num_passes=10 \
 --save_dir=$output \
 2>&1 | tee $log
