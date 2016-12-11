@@ -12,8 +12,9 @@
     <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
     <!-- bootstrap.js below is needed if you wish to zoom and view file content 
      in a larger detailed modal dialog -->
+    <!-- https://unpkg.com/vue/dist/vue.js -->
     <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="http://static.runoob.com/assets/vue/1.0.11/vue.min.js"></script>
 </head>
 
 <body>
@@ -49,7 +50,7 @@
     <button type="button" v-on:click="showReport()" class="btn btn-primary btn-lg btn-block">生成报告</button>
     <div id="report-table" style="display:none;">
         <div style="width:50%;float:left;">
-            <table class="table table-inverse table-hover table-bordered">
+            <table id= "table_left" class="table table-inverse table-hover table-bordered">
                 <thead>
                 <tr>
                     <th> </th>
@@ -74,7 +75,7 @@
         </div>
 
         <div style="width:50%;float:right;">
-            <table class="table table-inverse table-hover table-bordered">
+            <table id= "table_right" class="table table-inverse table-hover table-bordered">
                 <thead>
                 <tr>
                     <th> </th>
@@ -143,6 +144,11 @@
                         console.log("response of json_data:\n" + json_data);
                         console.log("data.date\n"+json_data["date"]);
                         console.log(json_data.bloodtest);
+
+                        //先清空表格内容
+                        $("#table_left  tr:not(:first)").empty();
+                        $("#table_right  tr:not(:first)").empty();
+
                         for (var i = 0; i < json_data["bloodtest"].length; i++) {
                         if(i<13){
                             report.report_items_left.push({
