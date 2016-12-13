@@ -6,10 +6,7 @@
 - 批处理大小为100
 
 ### 环境配置
-系统: ubuntu 14.04 / ubuntu 16.04
-    # 下载mnist数据集，并把数据集放到TensorFlow下的mnist_data文件夹内
-    https://pan.baidu.com/s/1bBI0Ku
-    
+系统: ubuntu 14.04 / ubuntu 16.04 
     # 安装pip，如果安装过了，则跳过此步
     sudo apt-get install python-pip
 
@@ -21,7 +18,10 @@
     
     # 安装Tensorflow
     pip install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc0-cp27-none-linux_x86_64.whl
-
+    
+    # 下载mnist数据集，并把数据集放到TensorFlow下的mnist_data文件夹内  
+    https://pan.baidu.com/s/1bBI0Ku
+    
 ### 运行
     python mnist.py
 

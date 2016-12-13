@@ -59,7 +59,6 @@ class NeuralNetwork(object):
     def predict(self, imageSource):
         reader = ImageReader();
         im = Image.open(imageSource);
-        print im.size;
         assert im.size == (28, 28);
         # convert image to uint8 gray image
         im = im.convert("L") 
