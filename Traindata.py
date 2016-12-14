@@ -19,10 +19,11 @@ class Traindata:
                 self.gender[i,0]=1
             else:
                 self.gender[i,1]=1
+        self.age = self.df.loc[1:,['age']]
         #将26项指标转换为26列的矩阵
         self.parameter = self.df.loc[1:,['WBC','RBC','HGB','HCT','MCV','MCH','MCHC','ROW','PLT','MPV','PCT','PDW','LYM','LYM%','MON','MON%','NEU','NEU%','EOS','EOS%','BAS','BAS%','ALY','ALY%','LIC','LIC%']]
     #可以返回随机的n个数据
-    def next_batch(self,n):
+    def next_batch_gender(self,n):
         lable = np.zeros((n,2))
         para = np.zeros((n,26))
         for i in range(n):
@@ -36,6 +37,20 @@ class Traindata:
             else:
                 para.append(self.parameter.iloc[k])
         return para,lable
+
+    def next_batch_age(self,n):
+        para = np.zeros((n,26))
+        for i in range(n):
+            k=random.randint(0, 1858)
+            if(i==0):
+                age = pd.DataFrame([self.age.iloc[k]])
+            else:
+                age.append(self.age.iloc[k])
+            if(i==0):
+                para = pd.DataFrame([self.parameter.iloc[k]])
+            else:
+                para.append(self.parameter.iloc[k])
+        return para,age
         
 
        
