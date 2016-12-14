@@ -1,32 +1,35 @@
 # Tensorflow框架下的mnist手写字符识别
-- 两层BP神经网络，输入层和输出层
-- 学习率0.01
-- 训练数据集是60000个28x28的ubyte手写字符数据，测试数据集是10000个28x28的ubyte手写字符数据
+- 简单双隐层 26->238->512->100（年龄）/ 2（性别）
+- 学习率0.01/0.1
+- 训练数据集A2的csv血液数据报告文件
 - 输出层用softmax函数做分类器，损失函数是cross entropy
-- 批处理大小为100
+- 批处理大小为17
+- 本内容皆在提供tensorflow标准数据格式的预处理范例
 
 ### 环境配置
-系统: ubuntu 14.04 / ubuntu 16.04 
-    # 安装pip，如果安装过了，则跳过此步
-    sudo apt-get install python-pip
+系统: UBUNTU系列， 有N卡支持CUDA请装GPU版本并在sess出处使用GPU执行训练
 
-    # 安装numpy，如果安装了，则跳过此步
+    # 安装numpy
     sudo apt-get install python-numpy
     
-    # 安装PIL，如果安装过了，则跳过此步
+    # 安装PIL
     sudo apt-get install python-imaging
     
     # 安装Tensorflow
     pip install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.0rc0-cp27-none-linux_x86_64.whl
     
-    # 下载mnist数据集，并把数据集放到TensorFlow下的mnist_data文件夹内  
-    https://pan.baidu.com/s/1bBI0Ku
     
 ### 运行
-    python mnist.py
-
+    mkdir ckpt_age
+    mkdir ckpt_sex
+    python age_predict.py   # 网络结构未优化，准确率40%上下
+    python sex_predict.py   # 同样由于网络结构问题，损失函数不收敛
 ### 解释
-1. ImageReader.py 
-   ImageReader.py封装了一个可以读取mnist ubyte数据集的类。load_images用于读取训练数据或测试数据，load_labels用于读取标签数据
-2. mnist.py 
-   load_train_images用于读取并返回训练数据和标签数据，load_test_images用于读取并返回测试数据和标签数据。train函数用于训练，predict读取的是一个图片，用于预测一个28x28的手写字符数据，predict_by_matrix读取的是一个size为1 x 784的矩阵，并返回一个预测值。
+1. age_predict.py 
+   训练网络，并预测一条记录（预测样本放在代码最后）
+2. tfrecords后缀文件和ckpt文件夹下内容 
+    第一次运行会根据数据集产生tfrecord文件，文件feed以及分batch均需要构建为这个标准数据格式，如需要扩充变化数据集请删除tfrecords内容（如要变化数据格式请重新）
+    第一次运行会在ckpt下状态保存点，如果需要调参再训练，请删除ckpt文件夹下内容; 
+
+### 注意
+如果不是用的最新版tensorflow，请去旧版文档查询并更改Saver()和Initializer()函数，0.11及以下版本使用的API名称是不同的
