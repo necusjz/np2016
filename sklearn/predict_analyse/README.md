@@ -11,7 +11,10 @@ pip install pandas
 ## 使用
 1. 下载预处理过的数据集
 
-```./download.sh```
+```
+chmod +x download.sh
+./download.sh
+```
 
 2. 预测
 
