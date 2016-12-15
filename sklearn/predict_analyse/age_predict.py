@@ -99,6 +99,8 @@ print X_train_new.shape, X_test_new.shape
 # 使用提取的特征重新训练
 clf.fit(X_train_new, y_train)
 # 评估训练集效果
+print '评估训练集效果'
 evalue(clf, X_train_new, y_train)
 # 评估测试集效果
+print '评估测试集效果'
 evalue(clf, X_test_new, y_test)
