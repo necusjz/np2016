@@ -58,3 +58,40 @@ Sex Prediction Accuracy MSE is:0.0255871783772
 Age Prediction Accuracy AVG is:0.561977173151
 Age Prediction Accuracy AVG is:0.0622593472121
 ```
+
+###梯度提升树（仅支持二分类）
+
+```
+python ./BTR_gradient_boosting.py
+```
+
+结果(迭代次数=100)：
+```
+Sex Prediction Accuracy AVG is:0.728212518228
+Sex Prediction Accuracy MSE is:0.0305777571064
+```
+
+###二分类（仅支持二分类）
+
+```
+python ./BTR_binary_classification.py
+```
+
+结果(迭代次数=100)：
+```
+Sex Prediction Accuracy AVG is:0.718756411999
+Sex Prediction Accuracy MSE is:0.0311279215968
+```
+
+###决策树（支持多分类）
+```
+python ./BTR_decision_tree.py
+```
+
+结果：
+```
+Sex Prediction Accuracy AVG is:0.707608775434
+Sex Prediction Accuracy MSE is:0.0292234440441
+Age Prediction Accuracy AVG is:0.552560046229
+Age Prediction Accuracy AVG is:0.05098502703
+```
