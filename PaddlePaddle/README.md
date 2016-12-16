@@ -43,7 +43,7 @@ apt-get install -f
 
 
 
-## 运行
+## 训练MNIST
 
 
 ```
@@ -53,6 +53,34 @@ sh preprocess.sh # 调用preprocess.py 预处理
 sh train.sh # 调用vgg.py训练，该脚本文件可设置训练模型存放路径和训练线程数等参数
 
 python prediction.py # 预测，注意设置其中模型路径model_path
+
+```
+
+
+
+## 训练性别
+
+
+训练前把train.csv，predict.csv拷贝到当前路径
+```
+
+sh train_sex.sh # 调用trainer_config_sex.py训练，注意设置num_passes训练次数，训练三十次错误率能降到30%左右
+
+sh predict_sex.sh # 调用trainer_config_sex.py预测，注意设置模型路径model_path
+
+```
+
+
+
+## 训练年龄
+
+
+训练前把train.csv，predict.csv拷贝到当前路径
+```
+
+sh train_age.sh # 调用trainer_config_age.py训练，注意设置num_passes训练次数，如果以5分段预测，训练100次错误率在85%左右，不分段错误率在95%左右
+
+sh predict_age.sh # 调用trainer_config_age.py预测，注意设置模型路径model_path
 
 ```
 
@@ -85,7 +113,35 @@ python prediction.py # 预测，注意设置其中模型路径model_path
 
 
 
-## image_provider.py
+## dataprovider.py
 
 
-实现向PaddlePaddle提供数据的接口，详见image_provider.py注释
+实现向PaddlePaddle提供数据的接口，详见dataprovider.py注释
+
+
+
+## trainer_config_sex.py
+
+
+性别训练网络配置
+
+
+
+## trainer_config_age.py
+
+
+年龄训练网络配置
+
+
+
+## predict_age.sh & predict_sex.sh
+
+
+预测脚本文件，预测的结果保存在当前路径下的result.txt文件，第一个数为预测的结果，后面的数是每个标签的概率
+
+
+
+## train.list & test.list
+
+
+训练文件和测试文件的列表

@@ -20,7 +20,7 @@ if not is_predict:
   #引用image_provider.py中的processData函数
   define_py_data_sources2(train_list=data_dir+"train.list",
                           test_list=data_dir+'test.list',
-                          module='image_provider',
+                          module='dataprovider',
                           obj='processData',
                           args=args)
 
