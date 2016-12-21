@@ -150,11 +150,13 @@ draw_net.py可以将网络模型由prototxt变成一张图片，draw_net.py存�
 绘制网络模型前，先安装两个库：ＧraphViz和pydot
 
 **1.安装ＧraphViz**
+
 Graphviz的是一款图形绘制工具，用来被python程序调用绘制图片
 
     sudo apt-get install GraphViz
 
 **2.安装pydot**
+
 pydot是python的支持画图的库
 
     sudo pip install pydot
