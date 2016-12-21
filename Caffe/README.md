@@ -172,6 +172,7 @@ pydot是python的支持画图的库
 第二个参数：–rankdir=x , x 有四种选项，分别是LR, RL, TB, BT 。用来表示网络的方向，分别是从左到右，从右到左，从上到小，从下到上。默认为ＬＲ。
 
 **绘制Lenet模型**
+
 在caffe根目录下
 
     python python/draw_net.py examples/mnist/lenet_train_test.prototxt ./lenet_train_test.jpg --rankdir=BT
