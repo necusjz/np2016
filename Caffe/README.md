@@ -143,3 +143,37 @@ sh create_lmdb.sh
 ```
 python train.py
 ```
+##prototxt网络模型绘制成可视化图片
+
+draw_net.py可以将网络模型由prototxt变成一张图片，draw_net.py存放在caffe根目录下python文件夹中。
+
+绘制网络模型前，先安装两个库：ＧraphViz和pydot
+
+1.安装ＧraphViz
+Graphviz的是一款图形绘制工具，用来被python程序调用绘制图片
+
+    sudo apt-get install GraphViz
+
+2.安装pydot
+pydot是python的支持画图的库
+
+    sudo pip install pydot
+
+3.编译pycaffe
+
+    make pycaffe
+
+完成上面三个步骤之后，就可以绘制网络模型了，draw_net.py执行的时候带三个参数
+
+第一个参数：网络模型的prototxt文件
+
+第二个参数：保存的图片路径及名字
+
+第二个参数：–rankdir=x , x 有四种选项，分别是LR, RL, TB, BT 。用来表示网络的方向，分别是从左到右，从右到左，从上到小，从下到上。默认为ＬＲ。
+
+绘制Lenet模型
+在caffe根目录下
+
+    python python/draw_net.py examples/mnist/lenet_train_test.prototxt ./lenet_train_test.jpg --rankdir=BT
+
+绘制完成后将会生成lenet_train_test.jpg
