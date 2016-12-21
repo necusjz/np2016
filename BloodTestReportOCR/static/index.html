@@ -99,13 +99,16 @@
             </table>
         </div>
     </div>
+    <br>
+    <br>
+    <button type="button" v-on:click="test()" class="btn btn-primary btn-lg btn-block">predict</button>
 </div>
 <script>
     var report = new Vue({
         el: '#report',
         data: {
             report_items_left: new Array(),
-            report_items_right: new Array()
+            report_items_right: new Array(),
         },
         methods: {
             showReport: function(event) {
@@ -119,28 +122,28 @@
                 url = 'report/' + url.split('/')[2];
                 console.log(url);
                 /*
-                $.get(url,function(data) {
-                    console.log(data);
-                    console.log(data['bloodtest']);
-                    for (var i = 0; i < data['bloodtest'].length; i++) {
-                        this.report_items_left.push({
-                            name: data.bloodtest[i].name,
-                            alias: data.bloodtest[i].alias,
-                            value: data.bloodtest[i].value,
-                            range: data.bloodtest[i].range,
-                            unit: data.boodtest[i].unit
-                        });
-                    }
-                });
-                */
+                 $.get(url,function(data) {
+                 console.log(data);
+                 console.log(data['bloodtest']);
+                 for (var i = 0; i < data['bloodtest'].length; i++) {
+                 this.report_items_left.push({
+                 name: data.bloodtest[i].name,
+                 alias: data.bloodtest[i].alias,
+                 value: data.bloodtest[i].value,
+                 range: data.bloodtest[i].range,
+                 unit: data.boodtest[i].unit
+                 });
+                 }
+                 });
+                 */
                 $.ajax({
                     url: url,
                     success: function(data) {
-			console.log("response before JSON.parse:\n" + data);
+                        console.log("response before JSON.parse:\n" + data);
                         // data是string，必须转化为json对象,第一次parse将不标准的string转换为JSON标准格式的string，第二次parse将标准格式的string转换为JSON对象
                         var json_str = JSON.parse(data);
-			var json_data = JSON.parse(json_str);
-			console.log("response of json_str:\n" + json_str);
+                        var json_data = JSON.parse(json_str);
+                        console.log("response of json_str:\n" + json_str);
                         console.log("response of json_data:\n" + json_data);
                         console.log("data.date\n"+json_data["date"]);
                         console.log(json_data.bloodtest);
@@ -150,27 +153,27 @@
                         $("#table_right  tr:not(:first)").empty();
 
                         for (var i = 0; i < json_data["bloodtest"].length; i++) {
-                        if(i<13){
-                            report.report_items_left.push({
-                                count: i+1,
-                                name: json_data.bloodtest[i]["name"],
-                                alias: json_data.bloodtest[i].alias,
-                                value: json_data.bloodtest[i].value,
-                                range: json_data.bloodtest[i].range,
-                                unit: json_data.bloodtest[i].unit
-                            });
+                            if(i<13){
+                                report.report_items_left.push({
+                                    count: i+1,
+                                    name: json_data.bloodtest[i]["name"],
+                                    alias: json_data.bloodtest[i].alias,
+                                    value: json_data.bloodtest[i].value,
+                                    range: json_data.bloodtest[i].range,
+                                    unit: json_data.bloodtest[i].unit
+                                });
                             }
 
-                        else {
-                            report.report_items_right.push({
-                                count: i+1,
-                                name: json_data.bloodtest[i]["name"],
-                                alias: json_data.bloodtest[i].alias,
-                                value: json_data.bloodtest[i].value,
-                                range: json_data.bloodtest[i].range,
-                                unit: json_data.bloodtest[i].unit
-                        });
-                        }
+                            else {
+                                report.report_items_right.push({
+                                    count: i+1,
+                                    name: json_data.bloodtest[i]["name"],
+                                    alias: json_data.bloodtest[i].alias,
+                                    value: json_data.bloodtest[i].value,
+                                    range: json_data.bloodtest[i].range,
+                                    unit: json_data.bloodtest[i].unit
+                                });
+                            }
 
                         }
 
@@ -178,7 +181,41 @@
                 });
 
                 $("#report-table").show();
+            },
+
+
+            test: function(event) {
+
+                data = [];
+                for(var i=0;i<13;i++)
+                    data[i] = Number(this.report_items_left[i].value);
+                for(var i=0;i<9;i++)
+                    data[13+i] = Number(this.report_items_right[i].value);
+
+                var data = {
+                    data: JSON.stringify(({
+                        "value":data
+                    }))
+                };
+
+
+                $.ajax({
+                    url: "/predict",
+                    type: 'POST',
+                    data: data,
+                    success: function(data) {
+                        var obj = JSON.parse(data)
+                        if(obj.sex == 1)
+                            var sexsex = "男";
+                        else
+                            var sexsex = "女"
+                        alert("性别：" + sexsex + "\n年龄：" + obj.age);
+
+
+                    }
+                })
             }
+
         }
     });
 
@@ -203,7 +240,7 @@
         });
 
     });
-    </script>
+</script>
 </body>
 
 </html>
