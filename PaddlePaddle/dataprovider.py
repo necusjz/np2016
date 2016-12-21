@@ -1,9 +1,105 @@
 # -*- coding: UTF-8 -*-
 import io
 import random
-
 import paddle.utils.image_util as image_util
 from paddle.trainer.PyDataProvider2 import *
+import csv
+
+@provider(input_types=[
+    #训练数据大小
+    dense_vector(26),
+    #标签种类
+    integer_value(2)
+])
+#提供性别训练数据的函数
+def process_sex(settings, file_name):
+    csvfile = file('train.csv', 'rb')
+    reader = csv.reader(csvfile)
+    for row in reader:
+        if row[0]!='id':
+	    sex=0
+	    if(row[1]=='\xc4\xd0'):
+		sex=1
+	    del row[0]
+	    del row[0]
+	    del row[0]
+	    pixels = []
+	    for j in row:
+		if(j!=''):
+            	    pixels.append(float(j))
+	    if(len(pixels)==26):
+	    	yield pixels,int(sex)
+    csvfile.close()
+
+def predict_initializer(settings, **kwargs):
+    settings.input_types=[
+    dense_vector(26)
+    ]
+#提供性别预测数据的函数
+@provider(init_hook=predict_initializer, should_shuffle=False)
+def process_predict_sex(settings, file_name):
+    csvfile = file('predict.csv', 'rb')
+    reader = csv.reader(csvfile)
+    rows= [row for row in reader]
+    #预测第一行
+    row=rows[1]
+    sex='女'
+    if(row[1]=='\xc4\xd0'):
+	sex='男'
+    print '实际性别：'+sex
+    del row[0]
+    del row[0]
+    del row[0]
+    pixels = []
+    for j in row:
+	pixels.append(float(j))
+    if(len(pixels)==26):
+	yield pixels
+
+@provider(input_types=[
+    dense_vector(26),
+    integer_value(100)
+])
+#提供年龄训练数据的函数
+def process_age(settings, file_name):
+    csvfile = file('train.csv', 'rb')
+    reader = csv.reader(csvfile)
+    for row in reader:
+        if row[0]!='id':
+	    age=int(row[2])
+	    del row[0]
+	    del row[0]
+	    del row[0]
+	    pixels = []
+	    for j in row:
+		if(j!=''):
+            	    pixels.append(float(j))
+	    if(len(pixels)==26):
+	    	yield pixels,age
+    csvfile.close()
+
+def predict_initializer(settings, **kwargs):
+    settings.input_types=[
+    dense_vector(26)
+    ]
+#提供年龄预测数据的函数
+@provider(init_hook=predict_initializer, should_shuffle=False)
+def process_predict_age(settings, file_name):
+    csvfile = file('predict.csv', 'rb')
+    reader = csv.reader(csvfile)
+    rows= [row for row in reader]
+    row=rows[1]
+    print '实际年龄：'+row[2]
+    del row[0]
+    del row[0]
+    del row[0]
+    pixels = []
+    for j in row:
+	if(j!=''):
+            pixels.append(float(j))
+    if(len(pixels)==26):
+	yield pixels
+    csvfile.close()
 
 def hook(settings, img_size, mean_img_size, num_classes, color, meta, use_jpeg,
          is_train, **kwargs):
