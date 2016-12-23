@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-from flask import Flask, request, Response, render_template, jsonify, redirect
-import flask
-from werkzeug.utils import secure_filename
-from pymongo import MongoClient
-import bson
-from cStringIO import StringIO
-from PIL import Image
-from imageFilter import ImageFilter
-import cv2
-import numpy
 import json
+from cStringIO import StringIO
+
+import bson
+import cv2
+import flask
+import numpy
+from PIL import Image
 from bson.json_util import dumps
+from flask import Flask, request, Response, jsonify, redirect, json
+from pymongo import MongoClient
+from werkzeug.utils import secure_filename
+
+import tf_predict
+from imageFilter import ImageFilter
 
 app = Flask(__name__, static_url_path="")
 
@@ -138,6 +140,27 @@ def get_report(fid):
     except bson.errors.InvalidId:
         flask.abort(404)
 
+@app.route("/predict", methods=['POST'])
+def predict():
+    print ("predict now!")
+
+    data = json.loads(request.form.get('data'))
+    ss = data['value']
+    arr = numpy.array(ss)
+    arr = numpy.reshape(arr, [1, 22])
+
+    sex, age = tf_predict.predict(arr)
+
+    result = {
+        "sex":sex,
+        "age":int(age)
+    }
+
+    return json.dumps(result)
+
+
 
 if __name__ == '__main__':
+
     app.run(host=app.config['SERVER_HOST'], port=app.config['SERVER_PORT'])
+    
