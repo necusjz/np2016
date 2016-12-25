@@ -17,7 +17,8 @@ def normalized(a,b):
             b[:, i] = 0
     return b
 
-def predict(data_predict):
+def predict(data_predict, logger):
+    g = tf.reset_default_graph()
     data_nor = np.loadtxt(open("./data.csv", "rb"), delimiter=",", skiprows=0)
 
     data_predict = normalized(data_nor[:, 2:], data_predict)
@@ -97,16 +98,15 @@ def predict(data_predict):
     '''
     共同的初始化
     '''
-
-
     saver = tf.train.Saver()
     init = tf.global_variables_initializer()
+    logger.info('This saver is : %s', saver)
     with tf.Session() as sess:
         saver.restore(sess, "./model.ckpt")
         print ("load model success!")
         p_sex = sess.run(pred_sex, feed_dict={x_sex: data_predict})
         p_age = sess.run(pred_age, feed_dict={x_age: data_predict})
-
+    logger.info('restore end')
     if p_sex[0][0] > p_sex[0][1]:
         sex_result = 1
     else:
