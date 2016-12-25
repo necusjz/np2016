@@ -73,60 +73,48 @@ def read_and_decode(filename):
 
 
 '''
-网络结构部分  结构 双隐层  26 -  256 - 1024 - 2 均为全连接层
+网络结构部分  结构 双隐层  26 -  64 - 512 - 2 均为全连接层
 '''
 
+#添加层函数
+def add_layer(inputs,in_size,out_size,n_layer,activation_function=None):
+    layer_name='layer%s'%n_layer
+    with tf.name_scope('layer'):
+        with tf.name_scope('weights'):
+            Ws = tf.Variable(tf.random_normal([in_size,out_size]))
+            tf.histogram_summary(layer_name+'/weights',Ws)
+        with tf.name_scope('baises'):
+            bs = tf.Variable(tf.zeros([1,out_size])+0.5)
+            tf.histogram_summary(layer_name+'/baises',bs)
+        with tf.name_scope('Wx_plus_b'):
+            Wxpb = tf.matmul(inputs,Ws) + bs
+  
+        if activation_function is None:
+            outputs = Wxpb
+        else:
+            outputs = activation_function(Wxpb)
+        tf.histogram_summary(layer_name+'/outputs',outputs)
+        return outputs
+
 # 定义占位符
-x = tf.placeholder(tf.float32, shape=[None, 26])
-y_ = tf.placeholder(tf.float32, shape=[None, 2])
+with tf.name_scope('inputs'):
+    x = tf.placeholder(tf.float32, shape=[None, 26])
+    y_ = tf.placeholder(tf.float32, shape=[None, 2])
 
+#2个隐藏层
+l1 = add_layer(tf.reshape(x, [-1, 26]),26,64,n_layer=1,activation_function=tf.nn.relu)
+l2 = add_layer(l1,64,512,n_layer=2,activation_function=tf.nn.relu)
+# add output layer
+y_result = add_layer(l2,512,2,n_layer=3)
 
-# 定义权重参数格式函数  参数初始值为0.1
-def weight_variable(shape):
-    initial = tf.truncated_normal(shape, stddev=random.uniform(0, 0.2))
-    return tf.Variable(initial)
-
-
-def bias_variable(shape):
-    initial = tf.constant(random.uniform(0, 0.2), shape=shape)
-    return tf.Variable(initial)
-
-W_fc1 = weight_variable([26, 64])
-b_fc1 = bias_variable([64])
-
-# 全连接层1reshape
-h_pool2_flat = tf.reshape(x, [-1, 26])
-
-# 激励函数fc1
-h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
-
-
-# 全连接层2参数格式
-W_fc2 = weight_variable([64, 512])
-b_fc2 = bias_variable([512])
-
-# 全连接层2输入reshape
-h_fc1_2 = tf.reshape(h_fc1, [-1, 64])
-
-# 激励函数fc2
-h_fc2 = tf.nn.relu(tf.matmul(h_fc1_2, W_fc2) + b_fc2)
-
-# dropout层
-keep_prob = tf.placeholder(tf.float32)
-h_fc1_drop = tf.nn.dropout(h_fc2, keep_prob)
-
-# 输出层参数格式
-W_fc3 = weight_variable([512, 2])
-b_fc3 = bias_variable([2])
-
-# 输出内容为y_result
-y_result = tf.matmul(h_fc1_drop, W_fc3) + b_fc3
 
 # 定义损失函数 交叉熵
-cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y_result, y_))
-
+with tf.name_scope('loss'):
+    cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y_result, y_))
+    tf.scalar_summary('loss',cross_entropy)
 # 定义训练op
-train_step = tf.train.AdamOptimizer(0.1).minimize(cross_entropy)
+with tf.name_scope('train'):
+    train_step = tf.train.AdamOptimizer(0.1).minimize(cross_entropy)
 
 # 定义正确预测
 # correct_prediction = tf.less_equal(tf.abs(tf.sub(tf.argmax(y_result, 1), tf.argmax(y_, 1))), 5)
@@ -146,21 +134,24 @@ init_op = tf.global_variables_initializer()
 '''
 # 如果没有保存模型则训练一个新的
 if not os.path.exists("./ckpt_sex/checkpoint"):
-    with tf.Session() as sess:
-        # 创建tfrecord
-        write_to_tensor('train_sex.tfrecords', 'train.csv')
-        write_to_tensor('predict_sex.tfrecords', 'predict.csv')
-        # 读取tfrecord
-        train_img, train_label = read_and_decode("train_sex.tfrecords")
-        test_img, test_label = read_and_decode("predict_sex.tfrecords")
+    # 创建tfrecord
+    write_to_tensor('train_sex.tfrecords', 'train.csv')
+    write_to_tensor('predict_sex.tfrecords', 'predict.csv')
+    # 读取tfrecord
+    train_img, train_label = read_and_decode("train_sex.tfrecords")
+    test_img, test_label = read_and_decode("predict_sex.tfrecords")
 
-        # 使用shuffle_batch分batch并打乱顺序
-        img_batch, label_batch = tf.train.shuffle_batch([train_img, train_label],
+    # 使用shuffle_batch分batch并打乱顺序
+    img_batch, label_batch = tf.train.shuffle_batch([train_img, train_label],
                                                         batch_size=17, capacity=2000,
                                                         min_after_dequeue=1000)
-        test_img_batch, test_label_batch = tf.train.shuffle_batch([test_img, test_label],
+    test_img_batch, test_label_batch = tf.train.shuffle_batch([test_img, test_label],
                                                                   batch_size=200, capacity=20000,
                                                                   min_after_dequeue=10000)
+    with tf.Session() as sess:
+        
+        merged = tf.merge_all_summaries()
+        writer = tf.train.SummaryWriter("logs/", sess.graph)
         # 激活计算图
         sess.run(init_op)
         # 启动队列
@@ -172,14 +163,17 @@ if not os.path.exists("./ckpt_sex/checkpoint"):
             # 输出局部正确率
             if i % 100 == 0:
                 train_accuracy = accuracy.eval(feed_dict={
-                    x: image, y_: dense_to_one_hot(label), keep_prob: 1.0})
+                    x: image, y_: dense_to_one_hot(label)})
                 print("step %d, training accuracy %g" % (i, train_accuracy))
-            train_step.run(feed_dict={x: image, y_: dense_to_one_hot(label), keep_prob: 0.5})
+                result = sess.run(merged,feed_dict={x: image, 
+                                                    y_: dense_to_one_hot(label)})
+                writer.add_summary(result,i)
+            train_step.run(feed_dict={x: image, y_: dense_to_one_hot(label)})
         # 加载测试集
         test_img, test_label = sess.run([test_img_batch, test_label_batch])
         # 输出整体正确率
         print("test accuracy %g" % accuracy.eval(feed_dict={
-            x: test_img, y_: dense_to_one_hot(test_label), keep_prob: 1.0}))
+            x: test_img, y_: dense_to_one_hot(test_label)}))
         # 保存模型
         save_path = saver.save(sess, cwd + "/ckpt_sex/sex.ckpt", write_meta_graph=None)
         print("Model saved in file: %s" % save_path)
