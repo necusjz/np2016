@@ -18,6 +18,7 @@ def normalized(a,b):
     return b
 
 def predict(data_predict):
+    tf.reset_default_graph()
     data_nor = np.loadtxt(open("./data.csv", "rb"), delimiter=",", skiprows=0)
 
     data_predict = normalized(data_nor[:, 2:], data_predict)
@@ -97,8 +98,6 @@ def predict(data_predict):
     '''
     共同的初始化
     '''
-
-
     saver = tf.train.Saver()
     init = tf.global_variables_initializer()
     with tf.Session() as sess:
@@ -106,7 +105,6 @@ def predict(data_predict):
         print ("load model success!")
         p_sex = sess.run(pred_sex, feed_dict={x_sex: data_predict})
         p_age = sess.run(pred_age, feed_dict={x_age: data_predict})
-
     if p_sex[0][0] > p_sex[0][1]:
         sex_result = 1
     else:
