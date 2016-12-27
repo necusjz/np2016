@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import random
 import subprocess
@@ -68,11 +69,11 @@ def load_data_into_lmdb(lmdb_name, features, labels=None):
     for i in range(features.shape[0]):
         datum = caffe.proto.caffe_pb2.Datum()
 
-        datum.channels = features.shape[1]   #
-        datum.height = 1                     #
-        datum.width = 1                      #
+        datum.channels = features.shape[1]   # features's number(26)
+        datum.height = 1                     # due to eachone only have one data
+        datum.width = 1                      # so the size is 1x1
 
-        if features.dtype == np.int:         #
+        if features.dtype == np.int:         # convert data to string  
             datum.data = features[i].tostring()
         elif features.dtype == np.float:
             datum.float_data.extend(features[i].flat)
@@ -118,7 +119,7 @@ def create_data_lmdb():
     #train : test = 9 : 1
     sss = StratifiedShuffleSplit(labels, 1, test_size=0.1, random_state=0)
     sss = list(sss)[0]
-    
+
     features_training = features[sss[0],]
     labels_training = labels[sss[0],]
 
