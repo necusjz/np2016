@@ -140,12 +140,43 @@ def get_report(fid):
     except bson.errors.InvalidId:
         flask.abort(404)
 
-@app.route("/predict", methods=['POST'])
-def predict():
+
+def update_report(fid,ss):
+    # load json example
+    with open('bloodtestdata.json') as json_file:
+        data = json.load(json_file)
+
+    for i in range(22):
+        data['bloodtest'][i]['value'] = ss[i]
+    json_data = json.dumps(data, ensure_ascii=False, indent=4)
+
+    db.files.update_one({
+        '_id': bson.objectid.ObjectId(fid)}, {
+        '$set': {
+            'report_data': json_data
+        }
+    }, upsert=False)
+
+
+    file = db.files.find_one(bson.objectid.ObjectId(fid))
+    report_data = bson.json_util.dumps(file['report_data'])
+    print report_data
+    
+
+
+@app.route('/predict/<fid>', methods=['POST'])
+def predict(fid):
+
+
     print ("predict now!")
 
     data = json.loads(request.form.get('data'))
     ss = data['value']
+
+
+    # 若用户在输入框中对数值进行修正，则更新mongodb中的数据
+    update_report(fid,ss)
+
     arr = numpy.array(ss)
     arr = numpy.reshape(arr, [1, 22])
 
