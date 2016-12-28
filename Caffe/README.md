@@ -139,7 +139,9 @@ pydot是python的支持画图的库
 ```
 sudo pip install module_name
 ```
+获取的数据来源：
 
+同项目目录下`Spark/BllodTestReportDeeplearning/data_set.csv`
 
 ### 使用
  - 在当前目录下建立两个数据库文件夹，test_data_lmdb，train_data_lmdb
