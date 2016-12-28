@@ -21,7 +21,7 @@ python ./BloodTestReportbyNB.py
 Sex Prediction Accuracy AVG is:0.621970740283
 Sex Prediction Accuracy MSE is:0.0339853457575
 Age Prediction Accuracy AVG is:0.539635804425
-Age Prediction Accuracy AVG is:0.039652048965
+Age Prediction Accuracy MSE is:0.039652048965
 ```
 ###线性支持向量机（仅支持二分类）
 ```
@@ -56,7 +56,7 @@ python ./BloodTestReportbyRF.py
 Sex Prediction Accuracy AVG is:0.71622711581
 Sex Prediction Accuracy MSE is:0.0255871783772
 Age Prediction Accuracy AVG is:0.561977173151
-Age Prediction Accuracy AVG is:0.0622593472121
+Age Prediction Accuracy MSE is:0.0622593472121
 ```
 
 ###梯度提升树（仅支持二分类）
@@ -93,5 +93,5 @@ python ./BTR_decision_tree.py
 Sex Prediction Accuracy AVG is:0.707608775434
 Sex Prediction Accuracy MSE is:0.0292234440441
 Age Prediction Accuracy AVG is:0.552560046229
-Age Prediction Accuracy AVG is:0.05098502703
+Age Prediction Accuracy MSE is:0.05098502703
 ```

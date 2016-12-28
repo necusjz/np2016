@@ -64,7 +64,7 @@ if __name__ == "__main__":
 		output.write(str(i)+",")
 	output.write("\n")
 	output.write('Age Prediction Accuracy AVG is:' + str(AgePAAVG) + "\n")
-	output.write('Age Prediction Accuracy AVG is:' + str(AgePAMSE) + "\n")
+	output.write('Age Prediction Accuracy MSE is:' + str(AgePAMSE) + "\n")
 	for i in accuracyAge:
 		output.write(str(i) + ",")
 	output.write("\n")

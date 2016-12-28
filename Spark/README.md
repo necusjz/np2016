@@ -49,3 +49,37 @@ sudo ./sbin/start-all.sh
 http://127.0.0.1:8080/
 ```
 查看Spark状态
+
+##安装MongoDB Connector for Hadoop
+
+MongoDB Connector for Hadoop是一个类库，他允许包括Spark、Pig、Hive、Mapreduce等在内的多种Hadoop架构中的组件使用MongoDB作为数据源。
+###第三方软件安装
+使用Maven安装：
+```
+<dependency>
+    <groupId>org.mongodb.mongo-hadoop</groupId>
+    <artifactId>mongo-hadoop-core</artifactId>
+    <version>1.5.1</version>
+</dependency>
+```
+或使用Gradle安装：
+```
+compile 'org.mongodb.mongo-hadoop:mongo-hadoop-core:1.5.1'
+```
+###独立安装
+克隆源代码：
+```
+git clone https://github.com/mongodb/mongo-hadoop.git
+```
+
+源代码克隆后需要编译，编译过程需连接外网进行下载，国内下载速度较慢，建议使用VPN
+```
+./gradlew jar
+```
+编译后的文件会放在core/build/libs目录下。若安装了Hadoop，则将三个文件分别拷贝至以下目录
+
+-$HADOOP_PREFIX/lib/
+-$HADOOP_PREFIX/share/hadoop/mapreduce/
+-$HADOOP_PREFIX/share/hadoop/lib/
+若是Spark独立部署，则将其拷贝至本机pyspark目录下即可。
+
