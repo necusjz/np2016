@@ -103,7 +103,7 @@ def feature_select(clf, X_train, y_train, X_test):
     indices = np.argsort(importances)[::-1]
     print("特征权值分布为: ")
     for f in range(X_train.shape[1]):
-        print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
+        print("%d. %s %d (%f)" % (f + 1, class_names_train2[indices[f]], indices[f], importances[indices[f]]))
     
     # 过滤掉权值小于threshold的特征
     model = SelectFromModel(clf, threshold=0.01, prefit=True)
