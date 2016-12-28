@@ -1,5 +1,5 @@
 # -*- coding: cp936 -*-
-#»ùÓÚSparkµÄÆÓËØ±´Ò¶Ë¹Ñª³£¹æ¼ìÑé±¨¸æÉî¶ÈÑ§Ï°ÏµÍ³
+#åŸºäºSparkçš„æœ´ç´ è´å¶æ–¯è¡€å¸¸è§„æ£€éªŒæŠ¥å‘Šæ·±åº¦å­¦ä¹ ç³»ç»Ÿ
 #2016.12.14
 
 from __future__ import print_function
@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     sc = SparkContext(appName="BloodTestReportPythonNaiveBayesExample")
 
-    # ¶ÁÈ¡Êı¾İ.
+    # è¯»å–æ•°æ®.
     print('Begin Load Data File!')
     sexData = MLUtils.loadLabeledPoints(sc, "LabeledPointsdata_sex.txt")
     ageData = MLUtils.loadLabeledPoints(sc, "LabeledPointsdata_age.txt")
@@ -26,22 +26,22 @@ if __name__ == "__main__":
     accuracySex = []
     accuracyAge = []
     for i in range(0,100):
-        # ½«Êı¾İËæ»ú·Ö¸îÎª9:1£¬·Ö±ğ×÷ÎªÑµÁ·Êı¾İ£¨training£©ºÍÔ¤²âÊı¾İ£¨test£©.
+        # å°†æ•°æ®éšæœºåˆ†å‰²ä¸º9:1ï¼Œåˆ†åˆ«ä½œä¸ºè®­ç»ƒæ•°æ®ï¼ˆtrainingï¼‰å’Œé¢„æµ‹æ•°æ®ï¼ˆtestï¼‰.
         sexTraining, sexTest = sexData.randomSplit([0.9, 0.1])
         ageTraining, ageTest = ageData.randomSplit([0.9, 0.1])
 
-        # ÑµÁ·ÆÓËØ±´Ò¶Ë¹Ä£ĞÍ.
+        # è®­ç»ƒæœ´ç´ è´å¶æ–¯æ¨¡å‹.
         #print('Begin NaiveBayes tranning!')
         sexModel = NaiveBayes.train(sexTraining, 1.0)
         ageModel = NaiveBayes.train(ageTraining, 1.0)
         #print('Trainning over!')
-        # ¶ÔtestÊı¾İ½øĞĞÔ¤²â£¬Êä³öÔ¤²â×¼È·¶È.
+        # å¯¹testæ•°æ®è¿›è¡Œé¢„æµ‹ï¼Œè¾“å‡ºé¢„æµ‹å‡†ç¡®åº¦.
         sexPredictionAndLabel = sexTest.map(lambda p: (sexModel.predict(p.features), p.label))
         agePredictionAndLabel = ageTest.map(lambda p: (ageModel.predict(p.features), p.label))
         #print(predictionAndLabel.collect())
         accuracySex.append(1.0 * sexPredictionAndLabel.filter(lambda (x, v): x == v).count() / sexTest.count())
         accuracyAge.append(1.0 * agePredictionAndLabel.filter(lambda (x, v): abs((x-v)<=5)).count() / ageTest.count())
-    #AVG£ºÆ½¾ùÊı  MSE£º¾ù·½²î
+    #AVGï¼šå¹³å‡æ•°  MSEï¼šå‡æ–¹å·®
     SexRDD = sc.parallelize(accuracySex)
     AgeRDD = sc.parallelize(accuracyAge)
     SexPAAVG = SexRDD.reduce(lambda x,y:x+y)/SexRDD.count()
@@ -63,7 +63,7 @@ if __name__ == "__main__":
         output.write(str(i)+",")
     output.write("\n")
     output.write('Age Prediction Accuracy AVG is:' + str(AgePAAVG) + "\n")
-    output.write('Age Prediction Accuracy AVG is:' + str(AgePAMSE) + "\n")
+    output.write('Age Prediction Accuracy MSE is:' + str(AgePAMSE) + "\n")
     for i in accuracyAge:
         output.write(str(i) + ",")
     output.write("\n")
