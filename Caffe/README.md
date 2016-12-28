@@ -131,7 +131,7 @@ pydot是python的支持画图的库
 
 绘制完成后将会生成lenet_train_test.jpg
 
-## 利用CAFFE预测病人性别,正确率只有67%，还可以通过优化网络结构进行提升
+## 利用CAFFE预测病人性别,正确率只有70%，还可以通过优化网络结构进行提升
 
 ### 环境配置(Ubuntu 14.04或以上版本)
 
@@ -142,12 +142,13 @@ sudo pip install module_name
 
 
 ### 使用
-1. 在当前目录下建立两个数据库文件夹，test_data_lmdb，train_data_lmdb
+ - 在当前目录下建立两个数据库文件夹，test_data_lmdb，train_data_lmdb
 
 ```
 mkdir test_data_lmdb train_datalmdb
 ```
-2. 运行caffe_sex_train_predict.py
+ - 运行caffe_sex_train_predict.py
+
 ```
 python caffe_sex_train_predict.py
 ```
