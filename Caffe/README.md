@@ -1,4 +1,11 @@
-*Caffe的优势是能够方便地使用图片进行训练和测试，缺点是不够灵活。*
+##文件说明
+
+ - caffe_sex_train_predict.py 性别预测demo主要代码，完成数据格式转换，训练及预测流程控制
+ - config.prototxt                     训练网络配置文件
+ - lenet_train.prototxt              训练网络设置
+ - model_prod_prototxt           预测网络设置
+ - draw_net.py                         网络绘图代码（未整合至主代码文件中）
+
 ##caffe的安装：
 **1、安装基本依赖**
 
