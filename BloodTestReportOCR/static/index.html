@@ -198,9 +198,16 @@
                     }))
                 };
 
+                url = $("#filtered-report").attr("src");
+                if (url == null) {
+                    alert("请上传报告");
+                    return;
+                }
+                url = 'predict/' + url.split('/')[2];
+
 
                 $.ajax({
-                    url: "/predict",
+                    url: url,
                     type: 'POST',
                     data: data,
                     success: function(data) {
