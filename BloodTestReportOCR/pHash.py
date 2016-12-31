@@ -5,7 +5,7 @@ Created on Fri Dec  2 20:03:39 2016
 
 @author: zhao
 """
-
+import numpy as np
 from PIL import Image
 from PIL import ImageFilter
 from PIL import ImageOps
@@ -148,17 +148,6 @@ def classify_DCT(image1,image2,size=(32,32),part_size=(8,8)):
 	code2 = get_code(List, middle)
  
 	return comp_code(code1, code2)
-
-
-#test
-image1=Image.open("url")
-image2=Image.open("url")
-rate=classify_DCT(image1,image2)/64.0
-#print rate
-if(rate>0.7):
-    print "true"
-else:
-    print "false"
 
 
        
