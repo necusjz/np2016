@@ -247,7 +247,8 @@ class ImageFilter:
             self.PerspectivImg = self.perspect(param)
             if self.PerspectiveImg is None:
                 return None
-        if not(classifier.isReport(self.PerspectiveImg)):
+        img = Image.open(self.output_path + 'region.jpg')
+        if not(classifier.isReport(img)):
             print "it is not a is Report!",classifier.isReport(self.PerspectiveImg)
             return None
         try:
