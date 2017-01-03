@@ -1,4 +1,11 @@
-*Caffe的优势是能够方便地使用图片进行训练和测试，缺点是不够灵活。*
+##文件说明
+
+ - caffe_sex_train_predict.py 性别预测demo主要代码，完成数据格式转换，训练及预测流程控制
+ - config.prototxt                     训练网络配置文件
+ - lenet_train.prototxt              训练网络设置
+ - model_prod_prototxt           预测网络设置
+ - draw_net.py                         网络绘图代码（未整合至主代码文件中）
+
 ##caffe的安装：
 **1、安装基本依赖**
 
@@ -31,7 +38,7 @@ git clone https://github.com/BVLC/caffe.git
 
 ```
 cd caffe
-cp Makefile.config.example Makefile.config 
+cp Makefile.config.example Makefile.config
 gedit Makefile.config
 ```
 
@@ -41,6 +48,20 @@ gedit Makefile.config
 INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /usr/include/hdf5/serial
 LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/lib/i386-linux-gnu/hdf5/serial
 ```
+如果是ubuntu16.04 64位版本，需要将第二项改为 ：
+```
+LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/hdf5/serial
+```
+
+如果make all依然有错，你可能需要进行下一步
+```
+cd /usr/lib/x86_64-linux-gnu
+
+sudo ln -s libhdf5_serial.so.10.1.0 libhdf5.so
+
+sudo ln -s libhdf5_serial_hl.so.10.0.2 libhdf5_hl.so
+```
+这依然是版本的锅。
 
 **6、编译安装**
 
@@ -57,6 +78,19 @@ make runtest
 make pycaffe
 make matcaffe
 ```
+ubuntu16.04 64位出错可能的解决方法：
+```
+# (Python 2.7 development files)
+sudo apt-get install -y python-dev
+sudo apt-get install -y python-numpy python-scipy
+```
+修改Makefile.config中
+```
+PYTHON_INCLUDE := /usr/include/python2.7 /usr/local/lib/python2.7/dist-packages/numpy/core/include
+
+WITH_PYTHON_LAYER := 1
+```
+这是因为numpy安装路径可能不一样。
 
 添加python环境变量，方便以后imoprt caffe，打开/etc/bash.bashrc末尾添加：
 
@@ -64,85 +98,8 @@ make matcaffe
 PYTHONPATH=/xxx/xxx/caffe/python:$PYTHONPATH
 ```
 
-	另外pycaffe的接口暴露在caff目录下的python文件夹，只需要import caffe就可以直接调用。matcaffe接口官网有介绍。
+另外pycaffe的接口暴露在caff目录下的python文件夹，只需要import caffe就可以直接调用。matcaffe接口官网有介绍。
 
-##使用caffe进行mnist手写数字网络训练和识别：
-**1、下载数据集：**
-
-```
-./data/mnist/get_mnist.sh
-./examples/mnist/create_mnist.sh
-```
-
-**2、定义神经网络（caffe已定义）：**
-
-```
-/examples/mnist/lenet_train_test.prototxt
-```
-
-**3、定义配置文件（caffe已定义）：**
-
-```
-/examples/mnist/lenet_solver.prototxt
-```
-
-**4、训练：**
-
-```
-./examples/mnist/train_lenet.sh
-```
-
-	训练完成后在/examples/mnist/下会有训练好的模型：lenet_iter_10000.caffemodel可直接用于我们的手写识别系统
-
-##使用pycaffe进行识别：
-
-```
-python -m SimpleHTTPServer 3000
-python server.py
-```
-
-	其中改写了ocr.js生成一张帆布的图片以作为网络的输入，server.py调用caffe_predict.py进行识别。
-
-caffe_predict.py的代码过程是：
-
-**1、以网络结构（.prototxt）、模型（.caffemodel）和均值文件（.npy）构建完整网络**
-
-**2、图片预处理设置**
-
-**3、加载图片**
-
-**4、处理图片**
-
-**5、向前传播**
-
-**6、输出结果**
-
-
-**关于均值文件的生成：**
-
-```
-sudo build/tools/compute_image_mean examples/mnist/mnist_train_lmdb examples/mnist/mean.binaryproto
-```
-	得到mean.binaryproto，但pycaffe要求使用npy格式的均值文件，需要进行转化，使用convert_mean.py:
-
-```
-python convert_mean.py mean.binaryproto mean.npy
-```
-**关于使用pycaffe训练：**
-
-	需要根据训练集配置好lenet_solver.prototxt和lenet_train.protxt里面的参数，因为没有发现适当的pycaffe接口，需要手工运行脚本把图片转换成lmdb格式，
-	再运行train.py进行训练，见train.txt、create_lmdb.sh和train.py。
-	注意脚本create_lmdb.sh中的路径需要修改。
-	train.txt中存放的是训练文件列表和标签。
-
-将train.txt中的文件转换为lmdb文件：
-```
-sh create_lmdb.sh
-```
-训练数据,生成模型：
-```
-python train.py
-```
 ##prototxt网络模型绘制成可视化图片
 
 draw_net.py可以将网络模型由prototxt变成一张图片，draw_net.py存放在caffe根目录下python文件夹中。
@@ -180,3 +137,37 @@ pydot是python的支持画图的库
     python python/draw_net.py examples/mnist/lenet_train_test.prototxt ./lenet_train_test.jpg --rankdir=BT
 
 绘制完成后将会生成lenet_train_test.jpg
+
+## 利用CAFFE预测病人性别,正确率只有70%，还可以通过优化网络结构进行提升
+
+### 环境配置(Ubuntu 14.04或以上版本)
+
+如果还有模块没有安装，可以使用如下命令安装
+```
+sudo pip install module_name
+```
+获取的数据来源：
+
+同项目目录下`Spark/BllodTestReportDeeplearning/data_set.csv`
+
+### 使用
+ - 在当前目录下建立两个数据库文件夹，test_data_lmdb，train_data_lmdb
+
+```
+mkdir test_data_lmdb train_datalmdb
+```
+ - 运行caffe_sex_train_predict.py
+
+```
+python caffe_sex_train_predict.py
+```
+
+注意：重复运行create_data_lmdb()并不会覆盖原来的文件，而是会在原文件结尾处继续生成新数据，如
+果需要重新调试，可以删除两个文件
+
+相关资料链接：
+官网上神经网络搭建实例：
+http://nbviewer.ipython.org/github/joyofdata/joyofdata-articles/blob/master/deeplearning-with-caffe/Neural-Networks-with-Caffe-on-the-GPU.ipynb
+
+layer 详解：
+http://blog.csdn.net/u011762313/article/details/47361571#sigmoid
