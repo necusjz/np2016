@@ -3,7 +3,7 @@ import numpy as np
 np.random.seed(1337)  # for reproducibility
 from keras.models import Sequential, model_from_json
 from keras.layers.core import Dense, Dropout, Activation
-from keras.optimizers import SGD, Adam, RMSprop
+from keras.optimizers import SGD, Adam, RMSprop, Adagrad
 from keras.utils import np_utils
 from time import sleep
 
@@ -16,7 +16,7 @@ def load_data():
    x_test=[]
    Y_test=[]
    
-   f = open("distinguishsexdata/train.txt","r")
+   f = open("train.txt","r")
    i = 0
    for line in f.readlines():
        line = line.strip("\n").split(",")
@@ -31,7 +31,7 @@ def load_data():
    y1=np.array(Y_train)
    f.close()
    
-   f = open("distinguishsexdata/test.txt","r")
+   f = open("test.txt","r")
    i = 0
    for line in f.readlines():
        line = line.strip("\n").split(",")
@@ -63,18 +63,21 @@ Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
 model = Sequential()
-model.add(Dense(32, input_shape=(26,)))
+model.add(Dense(16, input_shape=(26,)))
 model.add(Activation('relu'))
-model.add(Dropout(0.2))
-model.add(Dense(output_dim=32))
+model.add(Dropout(0.1))
+model.add(Dense(output_dim=247))
+model.add(Activation('relu'))
+model.add(Dropout(0.1))
+model.add(Dense(output_dim=125))
 model.add(Activation('relu'))
 model.add(Dropout(0.2))
 model.add(Dense(output_dim=20))
 model.add(Activation('softmax'))
 
-sgd = SGD(lr=0.05, decay=1e-6, momentum=0.9, nesterov=True)
+adagrad=Adagrad(lr=0.02, epsilon=1e-4)
 #model.compile(loss='categorical_crossentropy',optimizer=RMSprop(),metrics=['accuracy'])
-model.compile(loss='categorical_crossentropy',optimizer=sgd,metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy',optimizer=adagrad,metrics=['accuracy'])
 history = model.fit(X_train, Y_train,batch_size=batch_size, 
                     nb_epoch=nb_epoch,verbose=1, 
                     validation_data=(X_test, Y_test))
