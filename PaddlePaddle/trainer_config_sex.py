@@ -24,7 +24,7 @@ settings(
 #输入数据大小
 data = data_layer(name="data", size=26)
 #直接全连接，指明输出数据大小，激活函数是Softmax
-output = fc_layer(input=data, size=2, act=SoftmaxActivation())
+output = fc_layer(name="__fc_layer_0__",input=data, size=2, act=SoftmaxActivation())
 if is_predict:
     #找出最大概率的标签
     maxid = maxid_layer(output)
