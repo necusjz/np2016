@@ -17,6 +17,7 @@ from werkzeug.utils import secure_filename
 import tf_predict
 from imageFilter import ImageFilter
 import rnn_predict
+import pd_predict
 
 app = Flask(__name__, static_url_path="")
 
@@ -182,7 +183,7 @@ def predict(fid):
     arr = numpy.reshape(arr, [1, 22])
 
 
-    if app.config['MODEL'] == 0:
+    if app.config['MODEL'] == 'rnn':
         sex = rnn_predict.predict_sex(arr)
         age = rnn_predict.predict_age(arr)
         result = {
@@ -190,8 +191,14 @@ def predict(fid):
             "age": age
         }
 
-    elif app.config['MODEL'] == 1:
+    elif app.config['MODEL'] == 'tf':
         sex, age = tf_predict.predict(arr)
+        result = {
+            "sex": sex,
+            "age": int(age)
+        }
+    elif app.config['MODEL'] == 'pd':
+        sex, age = pd_predict.predict(arr)
         result = {
             "sex": sex,
             "age": int(age)

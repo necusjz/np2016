@@ -141,7 +141,21 @@ sh predict_age.sh # 调用trainer_config_age.py预测，注意设置模型路径
 
 
 
+## prediction_age.py & prediction_sex.py
+
+
+提供预测接口，也可单独执行，接口输入为一个形如[[[0,1,2,...]]]的list，输出为性别或年龄的标签
+
+
+
 ## train.list & test.list
 
 
 训练文件和测试文件的列表
+
+
+
+## __init__.py
+
+
+使A2的文件能导入本文件夹下的模块
