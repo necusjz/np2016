@@ -101,7 +101,7 @@ def predict(data_predict):
     saver = tf.train.Saver()
     init = tf.global_variables_initializer()
     with tf.Session() as sess:
-        saver.restore(sess, "./model.ckpt")
+        saver.restore(sess, "./nn_model/model.ckpt")
         print ("load model success!")
         p_sex = sess.run(pred_sex, feed_dict={x_sex: data_predict})
         p_age = sess.run(pred_age, feed_dict={x_age: data_predict})
