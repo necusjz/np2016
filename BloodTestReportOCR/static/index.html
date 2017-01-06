@@ -47,7 +47,7 @@
     <hr class="soften" />
 </div>
 <div id="report" class="container">
-    <button type="button" v-on:click="showReport()" class="btn btn-primary btn-lg btn-block">生成报告</button>
+    <button id="btnReport" type="button" v-on:click="showReport()" class="btn btn-primary btn-lg btn-block" style="display:none;">生成报告</button>
     <div id="report-table" style="display:none;">
         <div style="width:50%;float:left;">
             <table id= "table_left" class="table table-inverse table-hover table-bordered">
@@ -101,9 +101,12 @@
     </div>
     <br>
     <br>
-    <button type="button" v-on:click="test()" class="btn btn-primary btn-lg btn-block">predict</button>
+    <button id="btnPredict" type="button" v-on:click="test()" class="btn btn-primary btn-lg btn-block" style="display:none;">开始预测</button>
 </div>
 <script>
+    function refresh(){
+        location.reload();
+	}
     var report = new Vue({
         el: '#report',
         data: {
@@ -176,11 +179,10 @@
                             }
 
                         }
-
+                        $("#report-table").show();
+                        $("#btnPredict").show();
                     }
                 });
-
-                $("#report-table").show();
             },
 
 
@@ -198,16 +200,9 @@
                     }))
                 };
 
-                url = $("#filtered-report").attr("src");
-                if (url == null) {
-                    alert("请上传报告");
-                    return;
-                }
-                url = 'predict/' + url.split('/')[2];
-
 
                 $.ajax({
-                    url: url,
+                    url: "/predict",
                     type: 'POST',
                     data: data,
                     success: function(data) {
@@ -217,8 +212,7 @@
                         else
                             var sexsex = "女"
                         alert("性别：" + sexsex + "\n年龄：" + obj.age);
-
-
+                        refresh();
                     }
                 })
             }
@@ -243,11 +237,10 @@
             }else
             {
                 $("#filtered-image").empty().append(data.templates);
+                $("#btnReport").show();
             }
         });
-
     });
 </script>
 </body>
-
 </html>
