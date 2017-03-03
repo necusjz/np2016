@@ -139,5 +139,5 @@ Keras手写识别字符集Demo
 
 # Links
 
-* [http://www.jianshu.com/p/b8a703df5318](Keras深度学习框架配置)
+* [Keras深度学习框架配置](http://www.jianshu.com/p/b8a703df5318)
 * https://keras.io
