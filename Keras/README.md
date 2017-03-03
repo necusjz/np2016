@@ -137,3 +137,7 @@ Keras手写识别字符集Demo
 
 5. 具体函数作用参看注释和本节之前的说明。
 
+# Links
+
+* [http://www.jianshu.com/p/b8a703df5318](Keras深度学习框架配置)
+* https://keras.io
